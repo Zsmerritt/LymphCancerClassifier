@@ -3,7 +3,6 @@ from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Den
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 from keras import initializers
 from copy import deepcopy
-import keras.backend as K
 
 
 # this is the augmentation configuration we will use for training
@@ -26,7 +25,7 @@ trainDataLen=128909+87757
 validDataLen=2000+1361
 
 trainDataLenP=2000
-validDataLenP=200
+validDataLenP=512
 
 # this is a generator that will read pictures found in
 # subfolers of 'data/train', and indefinitely generate
@@ -62,20 +61,22 @@ def trainAndSave(model,epochs,name,image_size):
 		batch_size=calBatchSize(x,epochs)
 		#update generators only when batch size changes
 		if batch_size!=initBatchSize:
+			initBatchSize=batch_size
 			trainGen=trainGenerator(image_size,batch_size)
 			validGen=validationGenerator(image_size,batch_size)
 		#fit model
-		model.fit_generator(
+		output=model.fit_generator(
 		        trainGen,
 		        #steps_per_epoch=trainDataLen // batch_size,
 		        steps_per_epoch=trainDataLenP // batch_size,
 		        epochs=1,
-		        validation_data=validationGenerator(image_size,batch_size),
+		        validation_data=validGen,
 		        #validation_steps=validDataLen // batch_size,
-		        validation_steps=validDataLenP // 16,
+		        validation_steps=validDataLenP // batch_size,
 		        verbose=1,
 		        max_queue_size=16)
 		#cal loss and accuracy before comparing to previous best model
+		#loss,acc=model.evaluate_generator(validGen)
 		loss,acc=model.evaluate_generator(validGen)
 		if bestModelAcc<acc and bestModelLoss>loss:
 			bestModel=deepcopy(model)
@@ -110,25 +111,25 @@ def model1():
 	name='prototype1-og'
 
 	model = Sequential()
-	model.add(Conv2D(32, kernel_size=kernel_size, padding='same', kernel_initializer=initializers.he_normal(seed=None), input_shape=(image_size, image_size, 3)))
+	model.add(Conv2D(32, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None), input_shape=(image_size, image_size, 3)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
-	model.add(Conv2D(32, kernel_size=kernel_size, padding='same', kernel_initializer=initializers.he_normal(seed=None)))
+	model.add(Conv2D(32, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
-	model.add(Conv2D(64, kernel_size=kernel_size, padding='same', kernel_initializer=initializers.he_normal(seed=None)))
+	model.add(Conv2D(64, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
-	model.add(Conv2D(64, kernel_size=kernel_size, padding='same', kernel_initializer=initializers.he_normal(seed=None)))
+	model.add(Conv2D(64, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
