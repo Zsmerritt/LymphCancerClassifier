@@ -91,7 +91,8 @@ def calBatchSize(epoch, totalEpochs):
 
 def model():
 
-	dropout=0.3
+	#changing dropout to 0.2 from 0.3, ~86% with 0.3
+	dropout=0.2
 	kernel_size=(3,3)
 	pool_size=(2,2)
 	image_size=150
@@ -126,6 +127,11 @@ def model():
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
+	#new lines, ~86% without
+	model.add(Dense(256, kernel_initializer=initializers.lecun_normal(seed=None)))
+	model.add(Activation('relu'))
+	model.add(Dropout(dropout))
+	#end new lines
 
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal(seed=None)))
 	model.add(Activation('relu'))
@@ -139,10 +145,11 @@ def model():
 	model.add(Activation('relu'))
 	model.add(Dropout(dropout))
 
+	''' ~86% with these lines and without earlier lines
 	model.add(Dense(16, kernel_initializer=initializers.lecun_normal(seed=None)))
 	model.add(Activation('relu'))
 	model.add(Dropout(dropout))
-
+	'''
 			
 	model.add(Dense(1))
 	model.add(Activation('sigmoid'))
