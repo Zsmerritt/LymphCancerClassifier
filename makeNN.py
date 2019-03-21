@@ -3,6 +3,15 @@ from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Den
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 from keras import initializers
 from copy import deepcopy
+import keras.backend as K
+
+
+#adjust float size to lower mem requirements
+dtype='float16'
+K.set_floatx(dtype)
+
+# default is 1e-7 which is too small for float16.  Without adjusting the epsilon, we will get NaN predictions because of divide by zero problems
+K.set_epsilon(1e-4)
 
 
 # this is the augmentation configuration we will use for training
