@@ -46,7 +46,7 @@ def validationGenerator(size, batch):
         batch_size=batch,
         class_mode='binary')
 
-def trainAndSave(model,epochs,name,image_size,trainDataLen,validDataLen):
+def trainAndSave(model,epochs,name,image_size):
 	#hold on to best model to save after training
 	bestModel=model
 	bestModelLoss,bestModelAcc=1.0,0.0
