@@ -49,41 +49,46 @@ def trainAndSave(model,epochs,name,image_size):
 	#hold on to best model to save after training
 	bestModel=model
 	bestModelLoss,bestModelAcc=1.0,0.0
+	try:
+		#moved these out of loop to solve mem alocation prob
+		initBatchSize=16
+		trainGen=trainGenerator(image_size,initBatchSize)
+		validGen=validationGenerator(image_size,initBatchSize)
 
-	#moved these out of loop to solve mem alocation prob
-	initBatchSize=16
-	trainGen=trainGenerator(image_size,initBatchSize)
-	validGen=validationGenerator(image_size,initBatchSize)
-
-	for x in range(1,epochs+1):
-		#print infor and adjust batch size
-		print('MODEL: ',name,' CURRENT EPOCH:',x)
-		batch_size=calBatchSize(x,epochs)
-		#update generators only when batch size changes
-		if batch_size!=initBatchSize:
-			initBatchSize=batch_size
-			trainGen=trainGenerator(image_size,batch_size)
-			validGen=validationGenerator(image_size,batch_size)
-		#fit model
-		output=model.fit_generator(
-		        trainGen,
-		        #steps_per_epoch=trainDataLen // batch_size,
-		        steps_per_epoch=trainDataLenP // batch_size,
-		        epochs=1,
-		        validation_data=validGen,
-		        #validation_steps=validDataLen // batch_size,
-		        validation_steps=validDataLenP // batch_size,
-		        verbose=1,
-		        max_queue_size=16)
-		#cal loss and accuracy before comparing to previous best model
-		#loss,acc=model.evaluate_generator(validGen)
-		loss,acc=model.evaluate_generator(validGen)
-		if bestModelAcc<acc and bestModelLoss>loss:
-			bestModel=deepcopy(model)
-			bestModelLoss,bestModelAcc=loss,acc
-	#save best model created
-	bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
-	bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
+		for x in range(1,epochs+1):
+			#update batch_size and update generators when_batch
+			size changes
+			batch_size=calBatchSize(x,epochs)
+			if batch_size!=initBatchSize:
+				initBatchSize=batch_size
+				trainGen=trainGenerator(image_size,batch_size)
+				validGen=validationGenerator(image_size,batch_size)
+			#print info and start epoch
+			print('MODEL: ',name,' CURRENT EPOCH:',x)
+			output=model.fit_generator(
+			        trainGen,
+			        #steps_per_epoch=trainDataLen // batch_size,
+			        steps_per_epoch=trainDataLenP // batch_size,
+			        epochs=1,
+			        validation_data=validGen,
+			        #validation_steps=validDataLen // batch_size,
+			        validation_steps=validDataLenP // batch_size,
+			        verbose=1,
+			        max_queue_size=16)
+			#cal loss and accuracy before comparing to previous best model
+			#loss,acc=model.evaluate_generator(validGen)
+			loss,acc=model.evaluate_generator(validGen)
+			if bestModelAcc<acc and bestModelLoss>loss:
+				bestModel=deepcopy(model)
+				bestModelLoss,bestModelAcc=loss,acc
+		#save best model created
+		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
+		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
+	except KeyboardInterrupt as e:
+		print('Saving best model generated so far')
+		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
+		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
+		raise KeyboardInterrupt
 
 
 def calBatchSize(epoch, totalEpochs):
@@ -371,11 +376,30 @@ def model4():
 
 	trainAndSave(model,epochs,name,image_size)
 
+#method allows for restarting models which are trainging poorly
+def modelStart(modelName):
+	try:
+		modelName()
+		return True
+	except KeyboardInterrupt as e:
+		print('KeyboardInterrupt detected, ending training')
+		return False
+
+
 def main():
-	model1()
-	model2()
-	model3()
-	model4()
+	while not modelStart(model1):
+		if input('Would you like to restart this model? (y or n) ')==n:
+			break
+	while not modelStart(model2):
+		if input('Would you like to restart this model? (y or n) ')==n:
+			break
+	while not modelStart(model3):
+		if input('Would you like to restart this model? (y or n) ')==n:
+			break
+	while not modelStart(model4):
+		if input('Would you like to restart this model? (y or n) ')==n:
+			break
+
 
 
 
