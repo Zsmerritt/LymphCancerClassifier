@@ -6,14 +6,6 @@ from copy import deepcopy
 import keras.backend as K
 
 
-#adjust float size to lower mem requirements
-dtype='float16'
-K.set_floatx(dtype)
-
-# default is 1e-7 which is too small for float16.  Without adjusting the epsilon, we will get NaN predictions because of divide by zero problems
-K.set_epsilon(1e-4)
-
-
 # this is the augmentation configuration we will use for training
 train_datagen = ImageDataGenerator(
         rescale=1./255,
