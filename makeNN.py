@@ -1,5 +1,5 @@
 from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense, BatchNormalization, LeakyReLU
+from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense, BatchNormalization, LeakyReLU, ELU
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 from keras import initializers
 from copy import deepcopy
@@ -153,11 +153,6 @@ def model1():
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
-
-	model.add(Dense(256, kernel_initializer=initializers.lecun_normal(seed=None)))
-	model.add(Activation('relu'))
-	model.add(Dropout(dropout))	
-
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal(seed=None)))
 	model.add(Activation('relu'))
 	model.add(Dropout(dropout))
@@ -232,11 +227,6 @@ def model2():
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
-
-	model.add(Dense(256, kernel_initializer=initializers.lecun_normal(seed=None)))
-	model.add(LeakyReLU(alpha=0.3))
-	model.add(Dropout(dropout))	
-
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal(seed=None)))
 	model.add(LeakyReLU(alpha=0.3))
 	model.add(Dropout(dropout))
@@ -262,7 +252,7 @@ def model2():
 
 	trainAndSave(model,epochs,name,image_size)
 
-#he_uniform and lecun_uniform instead of he_normal and lecun_normal
+#ELU activations instead of ReLU
 def model3():
 
 	dropout=0.3
@@ -273,63 +263,58 @@ def model3():
 	name='prototype3'
 
 	model = Sequential()
-	model.add(Conv2D(32, kernel_size=kernel_size, kernel_initializer=initializers.he_uniform(seed=None), input_shape=(image_size, image_size, 3)))
-	model.add(Activation('relu'))
+	model.add(Conv2D(32, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None), input_shape=(image_size, image_size, 3)))
+	model.add(ELU(alpha=1.0))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
-	model.add(Conv2D(32, kernel_size=kernel_size, kernel_initializer=initializers.he_uniform(seed=None)))
-	model.add(Activation('relu'))
+	model.add(Conv2D(32, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
+	model.add(ELU(alpha=1.0))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
-	model.add(Conv2D(64, kernel_size=kernel_size, kernel_initializer=initializers.he_uniform(seed=None)))
-	model.add(Activation('relu'))
+	model.add(Conv2D(64, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
+	model.add(ELU(alpha=1.0))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
-	model.add(Conv2D(64, kernel_size=kernel_size, kernel_initializer=initializers.he_uniform(seed=None)))
-	model.add(Activation('relu'))
+	model.add(Conv2D(64, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
+	model.add(ELU(alpha=1.0))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
-	model.add(Conv2D(128, kernel_size=kernel_size, kernel_initializer=initializers.he_uniform(seed=None)))
-	model.add(Activation('relu'))
+	model.add(Conv2D(128, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
+	model.add(ELU(alpha=1.0))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
-	model.add(Conv2D(256, kernel_size=kernel_size, kernel_initializer=initializers.he_uniform(seed=None)))
-	model.add(Activation('relu'))
+	model.add(Conv2D(256, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
+	model.add(ELU(alpha=1.0))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
-
-	model.add(Dense(256, kernel_initializer=initializers.lecun_uniform(seed=None)))
-	model.add(Activation('relu'))
-	model.add(Dropout(dropout))	
-
-	model.add(Dense(128, kernel_initializer=initializers.lecun_uniform(seed=None)))
-	model.add(Activation('relu'))
+	model.add(Dense(128, kernel_initializer=initializers.lecun_normal(seed=None)))
+	model.add(ELU(alpha=1.0))
 	model.add(Dropout(dropout))
 
-	model.add(Dense(64, kernel_initializer=initializers.lecun_uniform(seed=None)))
-	model.add(Activation('relu'))
+	model.add(Dense(64, kernel_initializer=initializers.lecun_normal(seed=None)))
+	model.add(ELU(alpha=1.0))
 	model.add(Dropout(dropout))
 
-	model.add(Dense(32, kernel_initializer=initializers.lecun_uniform(seed=None)))
-	model.add(Activation('relu'))
+	model.add(Dense(32, kernel_initializer=initializers.lecun_normal(seed=None)))
+	model.add(ELU(alpha=1.0))
 	model.add(Dropout(dropout))
 
-	model.add(Dense(16, kernel_initializer=initializers.lecun_uniform(seed=None)))
-	model.add(Activation('relu'))
+	model.add(Dense(16, kernel_initializer=initializers.lecun_normal(seed=None)))
+	model.add(ELU(alpha=1.0))
 	model.add(Dropout(dropout))
 				
 	model.add(Dense(1))
@@ -342,7 +327,7 @@ def model3():
 	trainAndSave(model,epochs,name,image_size)
 
 
-#removed dropout layers within dense layers
+#removed alternating dropout and max pool layers
 def model4():
 
 	dropout=0.3
@@ -352,12 +337,12 @@ def model4():
 	epochs=50
 	name='prototype4'
 
+
+
 	model = Sequential()
 	model.add(Conv2D(32, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None), input_shape=(image_size, image_size, 3)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	model.add(MaxPooling2D(pool_size=pool_size))
-	model.add(Dropout(dropout))
 
 	model.add(Conv2D(32, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
 	model.add(Activation('relu'))
@@ -365,23 +350,25 @@ def model4():
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
+
+
 	model.add(Conv2D(64, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	model.add(MaxPooling2D(pool_size=pool_size))
-	model.add(Dropout(dropout))
 
 	model.add(Conv2D(64, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
+
+
 
 	model.add(Conv2D(128, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	model.add(MaxPooling2D(pool_size=pool_size))
-	model.add(Dropout(dropout))
+
+
 
 	model.add(Conv2D(256, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
 	model.add(Activation('relu'))
@@ -391,21 +378,21 @@ def model4():
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
-
-	model.add(Dense(256, kernel_initializer=initializers.lecun_normal(seed=None)))
-	model.add(Activation('relu'))
-
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal(seed=None)))
 	model.add(Activation('relu'))
+	model.add(Dropout(dropout))
 
 	model.add(Dense(64, kernel_initializer=initializers.lecun_normal(seed=None)))
 	model.add(Activation('relu'))
+	model.add(Dropout(dropout))
 
 	model.add(Dense(32, kernel_initializer=initializers.lecun_normal(seed=None)))
 	model.add(Activation('relu'))
+	model.add(Dropout(dropout))
 
 	model.add(Dense(16, kernel_initializer=initializers.lecun_normal(seed=None)))
 	model.add(Activation('relu'))
+	model.add(Dropout(dropout))
 				
 	model.add(Dense(1))
 	model.add(Activation('sigmoid'))
