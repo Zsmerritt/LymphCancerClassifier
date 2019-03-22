@@ -195,37 +195,37 @@ def model2():
 
 	model = Sequential()
 	model.add(Conv2D(32, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None), input_shape=(image_size, image_size, 3)))
-	model.add(Activation(LeakyReLU(alpha=0.3)))
+	model.add(LeakyReLU(alpha=0.3))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
 	model.add(Conv2D(32, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
-	model.add(Activation(LeakyReLU(alpha=0.3)))
+	model.add(LeakyReLU(alpha=0.3))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
 	model.add(Conv2D(64, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
-	model.add(Activation(LeakyReLU(alpha=0.3)))
+	model.add(LeakyReLU(alpha=0.3))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
 	model.add(Conv2D(64, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
-	model.add(Activation(LeakyReLU(alpha=0.3)))
+	model.add(LeakyReLU(alpha=0.3))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
 	model.add(Conv2D(128, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
-	model.add(Activation(LeakyReLU(alpha=0.3)))
+	model.add(LeakyReLU(alpha=0.3))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
 	model.add(Conv2D(256, kernel_size=kernel_size, kernel_initializer=initializers.he_normal(seed=None)))
-	model.add(Activation(LeakyReLU(alpha=0.3)))
+	model.add(LeakyReLU(alpha=0.3))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
@@ -234,23 +234,23 @@ def model2():
 
 
 	model.add(Dense(256, kernel_initializer=initializers.lecun_normal(seed=None)))
-	model.add(Activation(LeakyReLU(alpha=0.3)))
+	model.add(LeakyReLU(alpha=0.3))
 	model.add(Dropout(dropout))	
 
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal(seed=None)))
-	model.add(Activation(LeakyReLU(alpha=0.3)))
+	model.add(LeakyReLU(alpha=0.3))
 	model.add(Dropout(dropout))
 
 	model.add(Dense(64, kernel_initializer=initializers.lecun_normal(seed=None)))
-	model.add(Activation(LeakyReLU(alpha=0.3)))
+	model.add(LeakyReLU(alpha=0.3))
 	model.add(Dropout(dropout))
 
 	model.add(Dense(32, kernel_initializer=initializers.lecun_normal(seed=None)))
-	model.add(Activation(LeakyReLU(alpha=0.3)))
+	model.add(LeakyReLU(alpha=0.3))
 	model.add(Dropout(dropout))
 
 	model.add(Dense(16, kernel_initializer=initializers.lecun_normal(seed=None)))
-	model.add(Activation(LeakyReLU(alpha=0.3)))
+	model.add(LeakyReLU(alpha=0.3))
 	model.add(Dropout(dropout))
 				
 	model.add(Dense(1))
@@ -429,16 +429,16 @@ def modelStart(modelName):
 
 def main():
 	while not modelStart(model1):
-		if input('Would you like to restart this model? (y or n) ')==n:
+		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
 	while not modelStart(model2):
-		if input('Would you like to restart this model? (y or n) ')==n:
+		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
 	while not modelStart(model3):
-		if input('Would you like to restart this model? (y or n) ')==n:
+		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
 	while not modelStart(model4):
-		if input('Would you like to restart this model? (y or n) ')==n:
+		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
 
 
