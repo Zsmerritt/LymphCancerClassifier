@@ -56,8 +56,7 @@ def trainAndSave(model,epochs,name,image_size):
 		validGen=validationGenerator(image_size,initBatchSize)
 
 		for x in range(1,epochs+1):
-			#update batch_size and update generators when_batch
-			size changes
+			#update batch_size and update generators when_batch size changes
 			batch_size=calBatchSize(x,epochs)
 			if batch_size!=initBatchSize:
 				initBatchSize=batch_size
