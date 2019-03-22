@@ -110,7 +110,7 @@ def model1():
 	dropout=0.3
 	kernel_size=(3,3)
 	pool_size=(2,2)
-	image_size=150
+	image_size=200
 	epochs=50
 	name='prototype1'
 
@@ -189,7 +189,7 @@ def model2():
 	dropout=0.3
 	kernel_size=(3,3)
 	pool_size=(2,2)
-	image_size=150
+	image_size=200
 	epochs=50
 	name='prototype2'
 
@@ -268,7 +268,7 @@ def model3():
 	dropout=0.3
 	kernel_size=(3,3)
 	pool_size=(2,2)
-	image_size=150
+	image_size=200
 	epochs=50
 	name='prototype3'
 
@@ -348,7 +348,7 @@ def model4():
 	dropout=0.3
 	kernel_size=(3,3)
 	pool_size=(2,2)
-	image_size=150
+	image_size=200
 	epochs=50
 	name='prototype4'
 
