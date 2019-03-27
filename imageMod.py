@@ -35,8 +35,8 @@ except ImportError:
     scipy = None
 
 #custom code added 3/22/19
-from skimage import data, img_as_float
-from skimage import exposure
+#from skimage import data, img_as_float
+#from skimage import exposure
 #end of custom code
 
 if pil_image is not None:
@@ -759,11 +759,13 @@ class ImageDataGenerator(object):
     """
 
     def __init__(self,
+                 
                  #custom code added 3/22/19
-                 contrast_stretching=False, #####
-                 histogram_equalization=False, #####
-                 adaptive_equalization=False, #####
+                 #contrast_stretching=False, #####
+                 #histogram_equalization=False, #####
+                 #adaptive_equalization=False, #####
                  #end of custom code
+
                  featurewise_center=False,
                  samplewise_center=False,
                  featurewise_std_normalization=False,
@@ -786,11 +788,13 @@ class ImageDataGenerator(object):
                  data_format='channels_last',
                  validation_split=0.0,
                  dtype='float32'):
+        '''
         #custom code added 3/22/19
         self.contrast_stretching = contrast_stretching #####
         self.adaptive_equalization = adaptive_equalization #####
         self.histogram_equalization = histogram_equalization #####
         #end of custom code
+        '''
         self.featurewise_center = featurewise_center
         self.samplewise_center = samplewise_center
         self.featurewise_std_normalization = featurewise_std_normalization
@@ -1248,7 +1252,7 @@ class ImageDataGenerator(object):
                     'Received: %s' % (self.brightness_range,))
             brightness = np.random.uniform(self.brightness_range[0],
                                            self.brightness_range[1])
-        
+        '''
         #custom code added 3/22/19
         contrast_stretching=False #####
         if self.contrast_stretching: #####
@@ -1265,6 +1269,7 @@ class ImageDataGenerator(object):
             if np.random.random() < 0.5: #####
                 histogram_equalization=True
         #end of custom code
+        '''
 
         transform_parameters = {'theta': theta,
                                 'tx': tx,
@@ -1276,10 +1281,11 @@ class ImageDataGenerator(object):
                                 'flip_vertical': flip_vertical,
                                 'channel_shift_intensity': channel_shift_intensity,
                                 'brightness': brightness,
+                                
                                 #custom code added 3/22/19
-                                'contrast_stretching':contrast_stretching,
-                                'adaptive_equalization':adaptive_equalization,
-                                'histogram_equalization':histogram_equalization
+                                #'contrast_stretching':contrast_stretching,
+                                #'adaptive_equalization':adaptive_equalization,
+                                #'histogram_equalization':histogram_equalization
                                 #end of custom code
                                 }
 
