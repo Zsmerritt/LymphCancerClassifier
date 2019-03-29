@@ -212,10 +212,7 @@ def image_generator(transform_map, batch_size, target_size):
 		# Read in each input, perform preprocessing and get labels
 		for image_path in batch_paths:
 			#open and convert image to array before closing
-			image=pil_image.open(image_path)
-
-			#resize image to correct size
-			image.thumbnail(target_size)
+			image=load_img(image_path,target_size=target_size)
 
 			trans_image=random_transform(np.asarray(image),transform_map)
 			image.close()
@@ -240,8 +237,7 @@ def image_processor(transform_map, target_size,image_multiplier=1,save_test_imag
 	  
 	# Read in each input, perform preprocessing and get labels
 	for image_path in image_paths:
-		image=pil_image.open(image_path)
-		image.thumbnail(target_size)
+		image=load_img(image_path,target_size=target_size)
 		output=image_path.split('/')[-2]
 		output = 0 if output[0]=="n" else 1
 		for x in range(image_multiplier):
