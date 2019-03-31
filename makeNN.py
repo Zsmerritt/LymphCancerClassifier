@@ -11,7 +11,7 @@ import dataGen
 import numpy as np
 import tensorflow as tf
 import random as rn
-
+'''
 # The below is necessary for starting Numpy generated random numbers
 # in a well-defined initial state.
 
@@ -40,9 +40,9 @@ tf.set_random_seed(1234)
 
 sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
 K.set_session(sess)
-
-trainSetFolder='./data/prototyping/train/'
-validSetFolder='./data/prototyping/valid/'
+'''
+trainSetFolder='./data/train/'
+validSetFolder='./data/valid/'
 
 # this is the augmentation configuration we will use for training
 train_transform_map = dataGen.get_transform_map(
@@ -66,7 +66,7 @@ valid_transform_map = dataGen.get_transform_map(data_folder=validSetFolder,
 target_size=(96,96)
 
 print('generating data')
-train=dataGen.image_processor(transform_map=train_transform_map,target_size=target_size,image_multiplier=3)
+train=dataGen.image_processor(transform_map=train_transform_map,target_size=target_size)
 valid=dataGen.image_processor(transform_map=valid_transform_map,target_size=target_size)
 print('finished processing data')
 
