@@ -75,6 +75,7 @@ if pil_image is not None:
 	# This method is new in version 1.1.3 (2013).
 	if hasattr(pil_image, 'LANCZOS'):
 		_PIL_INTERPOLATION_METHODS['lanczos'] = pil_image.LANCZOS
+from tqdm import tqdm
 
 
 
@@ -230,13 +231,14 @@ def image_generator(transform_map, batch_size, target_size):
 
 
 def image_processor(transform_map, target_size,image_multiplier=1,save_test_images=False,save_test_directory='./data/testImages'):
-	image_paths = [os.path.join(dp, f) for dp, dn, filenames in os.walk(transform_map['data_folder']) for f in filenames if os.path.splitext(f)[1] == '.jpg']
+	image_paths = [os.path.join(dp, f) for dp, dn, filenames in os.walk(transform_map['data_folder']) for f in filenames if os.path.splitext(f)[1] == '.tif']
 	# Select files (paths/indices) for the batch
+	print(image_paths)
 	batch_input = []
 	batch_output = [] 
-	  
+	print('importing data')
 	# Read in each input, perform preprocessing and get labels
-	for image_path in image_paths:
+	for image_path in tqdm(image_paths):
 		image=load_img(image_path,target_size=target_size)
 		output=image_path.split('/')[-2]
 		output = 0 if output[0]=="n" else 1
@@ -260,7 +262,7 @@ def image_processor(transform_map, target_size,image_multiplier=1,save_test_imag
 
 def image_processor_batch(transform_map, target_size, batch_size):
 	#load file paths
-	image_paths = [os.path.join(dp, f) for dp, dn, filenames in os.walk(transform_map['data_folder']) for f in filenames if os.path.splitext(f)[1] == '.jpg']
+	image_paths = [os.path.join(dp, f) for dp, dn, filenames in os.walk(transform_map['data_folder']) for f in filenames if os.path.splitext(f)[1] == '.tif']
 	# Select files (paths/indices) for the batch
 	batch_paths = np.random.choice(a = image_paths, size = batch_size)
 	#lists to store data and labels
