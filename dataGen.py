@@ -233,12 +233,10 @@ def image_generator(transform_map, batch_size, target_size):
 def image_processor(transform_map, target_size,image_multiplier=1,save_test_images=False,save_test_directory='./data/testImages'):
 	image_paths = [os.path.join(dp, f) for dp, dn, filenames in os.walk(transform_map['data_folder']) for f in filenames if os.path.splitext(f)[1] == '.tif']
 	# Select files (paths/indices) for the batch
-	print(image_paths)
 	batch_input = []
 	batch_output = [] 
-	print('importing data')
 	# Read in each input, perform preprocessing and get labels
-	for image_path in tqdm(image_paths):
+	for image_path in tqdm(image_paths,desc='Importing Data'):
 		image=load_img(image_path,target_size=target_size)
 		output=image_path.split('/')[-2]
 		output = 0 if output[0]=="n" else 1
