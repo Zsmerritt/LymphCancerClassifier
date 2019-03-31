@@ -227,17 +227,17 @@ def test_model_accuracy(model,transform_map,target_size,batch_size):
 
 def calBatchSize(epoch, totalEpochs):
 	if epoch<=totalEpochs//6:
-		return 16
-	elif epoch<=(totalEpochs//6)*2:
 		return 32
-	elif epoch<=(totalEpochs//6)*3:
+	elif epoch<=(totalEpochs//6)*2:
 		return 64
-	elif epoch<=(totalEpochs//6)*4:
+	elif epoch<=(totalEpochs//6)*3:
 		return 128
-	elif epoch <=(totalEpochs//6)*5:
+	elif epoch<=(totalEpochs//6)*4:
 		return 256
-	else:
+	elif epoch <=(totalEpochs//6)*5:
 		return 512
+	else:
+		return 1024
 
 def model1():
 
