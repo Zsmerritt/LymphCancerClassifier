@@ -480,7 +480,7 @@ def random_transform(image, transform_map, seed=None):
 
 
 def flip_axis(x, axis):
-    x = np.asarray(x).swapaxes(axis, 0)
-    x = x[::-1, ...]
-    x = x.swapaxes(0, axis)
-    return x
+	x = np.asarray(x).swapaxes(axis, 0)
+	x = x[::-1, ...]
+	x = x.swapaxes(0, axis)
+	return x
