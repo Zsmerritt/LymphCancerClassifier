@@ -173,6 +173,48 @@ def trainAndSave(model,epochs,name):
 		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
 		raise KeyboardInterrupt
 
+def trainAndSaveBatch(model,epochs,name,target_size):
+	#hold on to best model to save after training
+	bestModel=model
+	bestModelLoss,bestModelAcc=1.0,0.0
+
+
+	try:
+		for x in range(0,epochs):
+			#update batch_size 
+			batch_size=calBatchSize(x+1,epochs)
+			steps_per_epoch_train=trainDataLen//batch_size
+			epoch_desc='MODEL: '+str(name)+'  CURRENT EPOCH: '+str(x+1)+"/"+str(epochs)+'  BATCH SIZE: '+str(batch_size)
+			for y in tqdm(range(steps_per_epoch_train), desc=epoch_desc):
+
+				train=dataGen.image_processor_batch(transform_map=train_transform_map,target_size=target_size,batch_size=batch_size)
+				model.train_on_batch(
+			        x=train['data'],
+			        y=train['labels'])
+			'''
+			#cal loss and accuracy before comparing to previous best model
+			acc = model.evaluate(
+							x=valid['data'],
+							y=valid['labels'],
+							batch_size=batch_size,
+							verbose=1)
+							#['val_acc'][0],hist.history['val_loss'][0]
+			'''
+			acc=test_model_accuracy(model=model,transform_map=valid_transform_map,target_size=target_size,batch_size=batch_size)
+			print("Model Validation Accuracy: ",acc)
+			if bestModelAcc<acc:
+				bestModel=deepcopy(model)
+				bestModelAcc=acc
+		#save best model created
+		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
+		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
+	except KeyboardInterrupt as e:
+		print('Saving best model generated so far')
+		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
+		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
+		raise KeyboardInterrupt
+
+
 
 def calBatchSize(epoch, totalEpochs):
 	if epoch<=totalEpochs//6:
@@ -253,7 +295,7 @@ def model1():
 	              optimizer='adam',
 	              metrics=['accuracy'])
 
-	trainAndSave(model,epochs,name)
+	trainAndSaveBatch(model,epochs,name,(image_size,image_size))
 
 
 #added 256 dense layer
@@ -326,7 +368,7 @@ def model2():
 	              optimizer='adam',
 	              metrics=['accuracy'])
 
-	trainAndSave(model,epochs,name)
+	trainAndSaveBatch(model,epochs,name,(image_size,image_size))
 
 
 #increased dropout to 0.7 and removed many dropout layers
@@ -392,7 +434,7 @@ def model3():
 	              optimizer='adam',
 	              metrics=['accuracy'])
 
-	trainAndSave(model,epochs,name)
+	trainAndSaveBatch(model,epochs,name,(image_size,image_size))
 
 
 #changed number of kernals (81-84)
@@ -461,7 +503,7 @@ def model4():
 	              optimizer='adam',
 	              metrics=['accuracy'])
 
-	trainAndSave(model,epochs,name)
+	trainAndSaveBatch(model,epochs,name,(image_size,image_size))
 
 
 
