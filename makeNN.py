@@ -64,12 +64,12 @@ valid_transform_map = dataGen.get_transform_map(data_folder=validSetFolder,
 											rescale=1./255)
 
 target_size=(96,96)
-
+'''
 print('generating data')
 train=dataGen.image_processor(transform_map=train_transform_map,target_size=target_size)
 valid=dataGen.image_processor(transform_map=valid_transform_map,target_size=target_size)
 print('finished processing data')
-
+'''
 trainDataLen=128909+87757
 validDataLen=2000+1361
 
@@ -213,6 +213,14 @@ def trainAndSaveBatch(model,epochs,name,target_size):
 		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
 		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
 		raise KeyboardInterrupt
+
+def test_model_accuracy(model,transform_map,target_size,batch_size):
+	correct=0
+	for x in tqdm(range(validDataLen),desc='Evaluating Model 		'):
+		valid=dataGen.image_processor_batch(transform_map=transform_map,target_size=target_size,batch_size=1)
+		prediction=round(model.predict(valid['data'].reshape(1, target_size[0], target_size[1], 3))[0][0])
+		if prediction== valid['labels'][0]:correct+=1
+	return correct/validDataLen
 
 
 
