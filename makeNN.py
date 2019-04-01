@@ -12,6 +12,8 @@ import numpy as np
 import tensorflow as tf
 import random as rn
 from tqdm import tqdm
+from threading import Thread
+import time
 '''
 # The below is necessary for starting Numpy generated random numbers
 # in a well-defined initial state.
@@ -55,14 +57,26 @@ train_transform_map = dataGen.get_transform_map(
         contrast_stretching=True, 
 		histogram_equalization=False, 
 		adaptive_equalization=True,
-		brightness_range=(0.0,1.5),
-		zca_whitening=True)
+		brightness_range=(0.0,1.5))
+		#zca_whitening=True)
 
 
 # this is the augmentation configuration we will use for testing:
 # only rescaling
 valid_transform_map = dataGen.get_transform_map(data_folder=validSetFolder,
 											rescale=1./255)
+train_datagen = dataGen.get_transform_map(
+        rescale=1./255,
+        horizontal_flip=True,
+        vertical_flip=True,
+        fill_mode='nearest',
+		brightness_range=(0.0,1.5))
+		#zca_whitening=True)
+
+
+# this is the augmentation configuration we will use for testing:
+# only rescaling
+test_datagen = dataGen.get_transform_map(rescale=1./255)
 
 target_size=(96,96)
 '''
@@ -78,7 +92,7 @@ trainDataLenP=2000
 validDataLenP=512
 
 
-'''
+
 # this is a generator that will read pictures found in
 # subfolers of 'data/train', and indefinitely generate
 # batches of augmented image data
@@ -97,7 +111,49 @@ def validationGenerator(size, batch):
         batch_size=batch,
         class_mode='binary')
 
-'''
+
+
+class data_loader():
+
+	def __init__(self,transform_map,target_size,batch_size,max_queue_size):
+		self.transform_map=transform_map
+		self.target_size=target_size
+		self.batch_size=batch_size
+		self.max_queue_size=max_queue_size
+		self.queue=[]
+		self._terminate=False
+		self._pause=False
+
+	def pop(self):
+		if len(self.queue)<1:time.sleep(3)
+		return self.queue.pop()
+
+	def generate_data(self):
+		print(not self._terminate,len(self.queue)<self.max_queue_size and not self._pause)
+		while not self._terminate:
+			if len(self.queue)<self.max_queue_size and not self._pause:
+				self.queue.append(dataGen.image_processor_batch(transform_map=self.transform_map,target_size=self.target_size,batch_size=self.batch_size))
+
+	def terminate(self):
+		self._terminate=True
+		Thread.join(self)
+
+	def update_batch_size(self,batch_size):
+		self._pause=True
+		time.sleep(3)
+		self.batch_size=batch_size
+		self.queue=[]
+		self._pause=False
+
+def train_model(model,epochs,name,target_size,train_transform_map,valid_transform_map,max_queue_size):
+	train_data_loader=data_loader(train_transform_map,target_size,32,max_queue_size)
+	valid_data_loader=data_loader(valid_transform_map,target_size,32,max_queue_size)
+
+	Thread(valid_data_loader.generate_data())
+	Thread(train_data_loader.generate_data())
+	Thread(trainAndSaveBatch(model,epochs,name,target_size))
+
+
 
 def shuffleData(data_dict):
 	perm=np.random.permutation(data_dict['data'].shape[0])
@@ -111,16 +167,15 @@ def trainAndSaveGenerator(model,epochs,name,target_size):
 	try:
 		for x in range(0,epochs):
 			#update batch_size 
-			batch_size=calBatchSize(x,epochs)
-
+			batch_size=32
 			#print info and start epoch
 			print('MODEL: ',name,' CURRENT EPOCH:',x+1)
 			hist=model.fit_generator(
-			        dataGen.image_generator(transform_map=train_transform_map,target_size=(target_size,target_size),batch_size=batch_size),
+			        ImageDataGenerator(transform_map=train_transform_map,target_size=(target_size,target_size),batch_size=batch_size),
 			        #steps_per_epoch=trainDataLen // batch_size,
 			        steps_per_epoch=trainDataLenP // batch_size,
 			        epochs=1,
-			        validation_data=dataGen.image_generator(transform_map=valid_transform_map,target_size=(target_size,target_size),batch_size=batch_size),
+			        validation_data=ImageDataGenerator(transform_map=valid_transform_map,target_size=(target_size,target_size),batch_size=batch_size),
 			        #validation_steps=validDataLen // batch_size,
 			        validation_steps=validDataLenP // batch_size,
 			        verbose=1,
@@ -174,21 +229,24 @@ def trainAndSave(model,epochs,name):
 		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
 		raise KeyboardInterrupt
 
-def trainAndSaveBatch(model,epochs,name,target_size):
+def trainAndSaveBatch(model,epochs,name,target_size,train_data_loader,valid_data_loader):
 	#hold on to best model to save after training
 	bestModel=model
 	bestModelLoss,bestModelAcc=1.0,0.0
 
-
+	batch_size=32
 	try:
 		for x in range(0,epochs):
 			#update batch_size 
-			batch_size=calBatchSize(x+1,epochs)
-			steps_per_epoch_train=trainDataLen//batch_size
+			if calBatchSize(x+1,epochs)!=batch_size:
+				batch_size=calBatchSize(x+1,epochs)
+				train_data_loader.update_batch_size(batch_size)
+
+			steps_per_epoch_train=2#trainDataLen//batch_size
 			epoch_desc='MODEL: '+str(name)+'  CURRENT EPOCH: '+str(x+1)+"/"+str(epochs)+'  BATCH SIZE: '+str(batch_size)
 			for y in tqdm(range(steps_per_epoch_train), desc=epoch_desc):
 
-				train=dataGen.image_processor_batch(transform_map=train_transform_map,target_size=target_size,batch_size=batch_size)
+				train=train_data_loader.pop()
 				model.train_on_batch(
 			        x=train['data'],
 			        y=train['labels'])
@@ -201,24 +259,28 @@ def trainAndSaveBatch(model,epochs,name,target_size):
 							verbose=1)
 							#['val_acc'][0],hist.history['val_loss'][0]
 			'''
-			acc=test_model_accuracy(model=model,transform_map=valid_transform_map,target_size=target_size,batch_size=batch_size)
+			acc=test_model_accuracy(model=model,transform_map=valid_transform_map,target_size=target_size,batch_size=batch_size,valid_data_loader=valid_data_loader)
 			print("Model Validation Accuracy: ",acc)
 			if bestModelAcc<acc:
 				bestModel=deepcopy(model)
 				bestModelAcc=acc
 		#save best model created
 		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
-		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
+		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn')
+		train_data_loader.terminate()
+		valid_data_loader.terminate()
 	except KeyboardInterrupt as e:
 		print('Saving best model generated so far')
 		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
 		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
+		train_data_loader.terminate()
+		valid_data_loader.terminate()
 		raise KeyboardInterrupt
 
-def test_model_accuracy(model,transform_map,target_size,batch_size):
+def test_model_accuracy(model,transform_map,target_size,batch_size,valid_data_loader):
 	correct=0
 	for x in tqdm(range(validDataLen),desc='Evaluating Model 		'):
-		valid=dataGen.image_processor_batch(transform_map=transform_map,target_size=target_size,batch_size=1)
+		valid=valid_data_loader.pop()
 		prediction=round(model.predict(valid['data'].reshape(1, target_size[0], target_size[1], 3))[0][0])
 		if prediction== valid['labels'][0]:correct+=1
 	return correct/validDataLen
@@ -246,7 +308,9 @@ def model1():
 	pool_size=(2,2)
 	image_size=96
 	epochs=50
-	name='prototype1'
+	name='model-1'
+	max_queue_size=16
+
 
 	model = Sequential()
 	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
@@ -304,8 +368,8 @@ def model1():
 	              optimizer='adam',
 	              metrics=['accuracy'])
 
-	trainAndSaveBatch(model,epochs,name,(image_size,image_size))
-
+	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
+	trainAndSaveGenerator(model,epochs,name,target_size)
 
 #added 256 dense layer
 def model2():
@@ -315,7 +379,8 @@ def model2():
 	pool_size=(2,2)
 	image_size=96
 	epochs=50
-	name='prototype2'
+	name='model-2'
+	max_queue_size=16
 
 	model = Sequential()
 	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
@@ -377,7 +442,8 @@ def model2():
 	              optimizer='adam',
 	              metrics=['accuracy'])
 
-	trainAndSaveBatch(model,epochs,name,(image_size,image_size))
+	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
+	trainAndSaveGenerator(model,epochs,name,target_size)
 
 
 #increased dropout to 0.7 and removed many dropout layers
@@ -388,7 +454,7 @@ def model3():
 	pool_size=(2,2)
 	image_size=96
 	epochs=50
-	name='prototype3'
+	name='model-3'
 
 	model = Sequential()
 	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
@@ -443,7 +509,8 @@ def model3():
 	              optimizer='adam',
 	              metrics=['accuracy'])
 
-	trainAndSaveBatch(model,epochs,name,(image_size,image_size))
+	#trainAndSaveBatch(model,epochs,name,(image_size,image_size))
+	trainAndSaveGenerator(model,epochs,name,target_size)
 
 
 #changed number of kernals (81-84)
@@ -454,7 +521,7 @@ def model4():
 	pool_size=(2,2)
 	image_size=96
 	epochs=50
-	name='prototype4'
+	name='model-4'
 
 	model = Sequential()
 	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
@@ -512,7 +579,8 @@ def model4():
 	              optimizer='adam',
 	              metrics=['accuracy'])
 
-	trainAndSaveBatch(model,epochs,name,(image_size,image_size))
+	#trainAndSaveBatch(model,epochs,name,(image_size,image_size))
+	trainAndSaveGenerator(model,epochs,name,target_size)
 
 
 
@@ -534,13 +602,14 @@ def main():
 	while not modelStart(model2):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
+	'''
 	while not modelStart(model3):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
 	while not modelStart(model4):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
-
+	'''
 
 
 
