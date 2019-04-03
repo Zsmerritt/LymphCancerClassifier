@@ -193,6 +193,10 @@ def trainAndSaveGenerator(model,epochs,name,target_size):
 		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
 		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
 		raise KeyboardInterrupt
+	except MemoryError as e:
+		print('Memory Error! Saving best model generated so far')
+		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
+		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
 
 def trainAndSave(model,epochs,name):
 	#hold on to best model to save after training
@@ -228,6 +232,10 @@ def trainAndSave(model,epochs,name):
 		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
 		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
 		raise KeyboardInterrupt
+	except MemoryError as e:
+		print('Memory Error! Saving best model generated so far')
+		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
+		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn')
 
 def trainAndSaveBatch(model,epochs,name,target_size,train_data_loader,valid_data_loader):
 	#hold on to best model to save after training
@@ -276,6 +284,12 @@ def trainAndSaveBatch(model,epochs,name,target_size,train_data_loader,valid_data
 		train_data_loader.terminate()
 		valid_data_loader.terminate()
 		raise KeyboardInterrupt
+	except MemoryError as e:
+		print('Memory Error! Saving best model generated so far')
+		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
+		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn')
+		train_data_loader.terminate()
+		valid_data_loader.terminate()
 
 def test_model_accuracy(model,transform_map,target_size,batch_size,valid_data_loader):
 	correct=0
