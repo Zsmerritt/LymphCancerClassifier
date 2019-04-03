@@ -305,7 +305,7 @@ def model1():
 	kernel_size=(5,5)
 	pool_size=(2,2)
 	image_size=96
-	epochs=6
+	epochs=50
 	name='model-1'
 	max_queue_size=16
 	batch_size=64
