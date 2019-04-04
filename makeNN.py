@@ -355,8 +355,10 @@ def model1():
 	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
 	trainAndSaveGenerator(model,epochs,name,target_size,batch_size)
 
-	model.save_weights('./weights/weights_'+name+'.h5')
-	model.save('./models/model_'+name+'.dnn') 
+	(loss,acc)=model.evaluate_generator(validationGenerator(target_size,batch_size),steps=validDataLen // batch_size)
+
+	model.save_weights('./weights/weights_'+name+'_'+str(round(acc,5))+'.h5')
+	model.save('./models/model_'+name+'_'+str(round(acc,5))+'.dnn') 
 
 #increased batch size to 128
 def model2():
@@ -432,8 +434,11 @@ def model2():
 
 	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
 	trainAndSaveGenerator(model,epochs,name,target_size,batch_size)
-	model.save_weights('./weights/weights_'+name+'.h5')
-	model.save('./models/model_'+name+'.dnn') 
+
+	(loss,acc)=model.evaluate_generator(validationGenerator(target_size,batch_size),steps=validDataLen // batch_size)
+
+	model.save_weights('./weights/weights_'+name+'_'+str(round(acc,5))+'.h5')
+	model.save('./models/model_'+name+'_'+str(round(acc,5))+'.dnn') 
 
 #~93.7
 def model3():
@@ -509,8 +514,11 @@ def model3():
 
 	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
 	trainAndSaveGenerator(model,epochs,name,target_size,batch_size)
-	model.save_weights('./weights/weights_'+name+'.h5')
-	model.save('./models/model_'+name+'.dnn') 
+
+	(loss,acc)=model.evaluate_generator(validationGenerator(target_size,batch_size),steps=validDataLen // batch_size)
+
+	model.save_weights('./weights/weights_'+name+'_'+str(round(acc,5))+'.h5')
+	model.save('./models/model_'+name+'_'+str(round(acc,5))+'.dnn') 
 
 #changed number of kernals (81-84)
 def model4():
@@ -584,8 +592,11 @@ def model4():
 
 	#trainAndSaveBatch(model,epochs,name,(image_size,image_size))
 	trainAndSaveGenerator(model,epochs,name,target_size)
-	model.save_weights('./weights/weights_'+name+'.h5')
-	model.save('./models/model_'+name+'.dnn') 
+
+	(loss,acc)=model.evaluate_generator(validationGenerator(target_size,batch_size),steps=validDataLen // batch_size)
+
+	model.save_weights('./weights/weights_'+name+'_'+str(round(acc,5))+'.h5')
+	model.save('./models/model_'+name+'_'+str(round(acc,5))+'.dnn') 
 
 
 
