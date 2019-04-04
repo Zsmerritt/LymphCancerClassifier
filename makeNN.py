@@ -155,7 +155,11 @@ def trainAndSaveGenerator(model,epochs,name,target_size,batch_size):
 	        validation_steps=validDataLen // batch_size,
 	        #validation_steps=validDataLenP // batch_size,
 	        verbose=1,
-	        max_queue_size=16)
+	        max_queue_size=16,
+            callbacks=[
+          		EarlyStopping(patience=4, restore_best_weights=True),
+				ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001)
+		    ])
 
 def trainAndSave(model,epochs,name):
 	#hold on to best model to save after training
@@ -346,11 +350,7 @@ def model1():
 
 	model.compile(loss='binary_crossentropy',
 	              optimizer='adam',
-	              metrics=['accuracy'],
-	              callbacks=[
-	              		EarlyStopping(patience=4, restore_best_weights=True),
-        				ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001)
-        		  ])
+	              metrics=['accuracy'])
 
 	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
 	trainAndSaveGenerator(model,epochs,name,target_size,batch_size)
@@ -426,11 +426,7 @@ def model2():
 
 	model.compile(loss='binary_crossentropy',
 	              optimizer='adam',
-	              metrics=['accuracy'],
-	              callbacks=[
-	              		EarlyStopping(patience=4, restore_best_weights=True),
-        				ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001)
-        		  ])
+	              metrics=['accuracy'])
 
 	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
 	trainAndSaveGenerator(model,epochs,name,target_size,batch_size)
@@ -506,11 +502,7 @@ def model3():
 
 	model.compile(loss='binary_crossentropy',
 	              optimizer='adam',
-	              metrics=['accuracy'],
-	              callbacks=[
-	              		EarlyStopping(patience=4, restore_best_weights=True),
-        				ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001)
-        		  ])
+	              metrics=['accuracy'])
 
 	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
 	trainAndSaveGenerator(model,epochs,name,target_size,batch_size)
@@ -584,11 +576,7 @@ def model4():
 
 	model.compile(loss='binary_crossentropy',
 	              optimizer='adam',
-	              metrics=['accuracy'],
-	              callbacks=[
-	              		EarlyStopping(patience=4, restore_best_weights=True),
-        				ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001)
-        		  ])
+	              metrics=['accuracy'])
 
 	#trainAndSaveBatch(model,epochs,name,(image_size,image_size))
 	trainAndSaveGenerator(model,epochs,name,target_size)
