@@ -279,6 +279,7 @@ def calBatchSize(epoch, totalEpochs):
 	else:
 		return 1024
 
+#~93 w/batch_size=64, changing to 256
 def model1():
 
 	dropout=0.3
@@ -288,7 +289,7 @@ def model1():
 	epochs=50
 	name='model-1'
 	max_queue_size=16
-	batch_size=64
+	batch_size=256
 
 
 	model = Sequential()
@@ -367,7 +368,7 @@ def model2():
 	epochs=50
 	name='model-2'
 	max_queue_size=16
-	batch_size=64
+	batch_size=128
 
 	model = Sequential()
 	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
@@ -401,10 +402,6 @@ def model2():
 	model.add(Dropout(dropout))
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
-
-	model.add(Dense(256, kernel_initializer=initializers.lecun_normal()))
-	model.add(Activation('relu'))
-	model.add(Dropout(dropout))
 
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
