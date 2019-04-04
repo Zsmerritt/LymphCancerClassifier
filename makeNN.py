@@ -15,6 +15,8 @@ from tqdm import tqdm
 from threading import Thread
 import time
 from data_loader import data_loader, data_loader_generator
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau
+
 '''
 # The below is necessary for starting Numpy generated random numbers
 # in a well-defined initial state.
@@ -141,41 +143,19 @@ def shuffleData(data_dict):
 #using generator
 def trainAndSaveGenerator(model,epochs,name,target_size,batch_size):
 	#hold on to best model to save after training
-	bestModel=model
-	bestModelLoss,bestModelAcc=1.0,0.0
 	trainGen=trainGenerator(target_size,batch_size)
 	validGen=validationGenerator(target_size,batch_size)
-	try:
-		for x in range(0,epochs):
-			#print info and start epoch
-			print('MODEL: ',name,' CURRENT EPOCH:',x+1)
-			hist=model.fit_generator(
-			        trainGen,
-			        steps_per_epoch=trainDataLen // batch_size,
-			        #steps_per_epoch=trainDataLenP // batch_size,
-			        epochs=1,
-			        validation_data=validGen,
-			        validation_steps=validDataLen // batch_size,
-			        #validation_steps=validDataLenP // batch_size,
-			        verbose=1,
-			        max_queue_size=16)
-			#cal loss and accuracy before comparing to previous best model
-			acc,loss=hist.history['val_acc'][0],hist.history['val_loss'][0]
-			if bestModelAcc<acc and bestModelLoss>loss:
-				bestModel=deepcopy(model)
-				bestModelLoss,bestModelAcc=loss,acc
-		#save best model created
-		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
-		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
-	except KeyboardInterrupt as e:
-		print('Saving best model generated so far')
-		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
-		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
-		raise KeyboardInterrupt
-	except MemoryError as e:
-		print('Memory Error! Saving best model generated so far')
-		bestModel.save_weights('./weights/weights_'+name+'_'+str(round(bestModelAcc,5))+'.h5')
-		bestModel.save('./models/model_'+name+'_'+str(round(bestModelAcc,5))+'.dnn') 
+	#print info and start epoch
+	hist=model.fit_generator(
+	        trainGen,
+	        steps_per_epoch=trainDataLen // batch_size,
+	        #steps_per_epoch=trainDataLenP // batch_size,
+	        epochs=epochs,
+	        validation_data=validGen,
+	        validation_steps=validDataLen // batch_size,
+	        #validation_steps=validDataLenP // batch_size,
+	        verbose=1,
+	        max_queue_size=16)
 
 def trainAndSave(model,epochs,name):
 	#hold on to best model to save after training
@@ -365,10 +345,17 @@ def model1():
 
 	model.compile(loss='binary_crossentropy',
 	              optimizer='adam',
-	              metrics=['accuracy'])
+	              metrics=['accuracy'],
+	              callbacks=[
+	              		EarlyStopping(patience=4, restore_best_weights=True),
+        				ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001)
+        		  ])
 
 	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
 	trainAndSaveGenerator(model,epochs,name,target_size,batch_size)
+
+	model.save_weights('./weights/weights_'+name+'.h5')
+	model.save('./models/model_'+name+'.dnn') 
 
 #added 256 dense layer
 def model2():
@@ -440,11 +427,16 @@ def model2():
 
 	model.compile(loss='binary_crossentropy',
 	              optimizer='adam',
-	              metrics=['accuracy'])
+	              metrics=['accuracy'],
+	              callbacks=[
+	              		EarlyStopping(patience=4, restore_best_weights=True),
+        				ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001)
+        		  ])
 
 	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
 	trainAndSaveGenerator(model,epochs,name,target_size,batch_size)
-
+	model.save_weights('./weights/weights_'+name+'.h5')
+	model.save('./models/model_'+name+'.dnn') 
 
 #increased dropout to 0.7 and removed many dropout layers
 def model3():
@@ -507,11 +499,16 @@ def model3():
 
 	model.compile(loss='binary_crossentropy',
 	              optimizer='adam',
-	              metrics=['accuracy'])
+	              metrics=['accuracy'],
+	              callbacks=[
+	              		EarlyStopping(patience=4, restore_best_weights=True),
+        				ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001)
+        		  ])
 
 	#trainAndSaveBatch(model,epochs,name,(image_size,image_size))
 	trainAndSaveGenerator(model,epochs,name,target_size)
-
+	model.save_weights('./weights/weights_'+name+'.h5')
+	model.save('./models/model_'+name+'.dnn') 
 
 #changed number of kernals (81-84)
 def model4():
@@ -577,11 +574,16 @@ def model4():
 
 	model.compile(loss='binary_crossentropy',
 	              optimizer='adam',
-	              metrics=['accuracy'])
+	              metrics=['accuracy'],
+	              callbacks=[
+	              		EarlyStopping(patience=4, restore_best_weights=True),
+        				ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001)
+        		  ])
 
 	#trainAndSaveBatch(model,epochs,name,(image_size,image_size))
 	trainAndSaveGenerator(model,epochs,name,target_size)
-
+	model.save_weights('./weights/weights_'+name+'.h5')
+	model.save('./models/model_'+name+'.dnn') 
 
 
 
