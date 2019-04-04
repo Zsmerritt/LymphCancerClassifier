@@ -279,7 +279,7 @@ def calBatchSize(epoch, totalEpochs):
 	else:
 		return 1024
 
-#~93 w/batch_size=64, changing to 256
+#~93.7 w/batch_size=64, changing to 256
 def model1():
 
 	dropout=0.3
@@ -358,7 +358,7 @@ def model1():
 	model.save_weights('./weights/weights_'+name+'.h5')
 	model.save('./models/model_'+name+'.dnn') 
 
-#added 256 dense layer
+#increased batch size to 128
 def model2():
 
 	dropout=0.3
@@ -435,26 +435,30 @@ def model2():
 	model.save_weights('./weights/weights_'+name+'.h5')
 	model.save('./models/model_'+name+'.dnn') 
 
-#increased dropout to 0.7 and removed many dropout layers
+#~93.7
 def model3():
 
-	dropout=0.7
+	dropout=0.3
 	kernel_size=(5,5)
 	pool_size=(2,2)
 	image_size=96
 	epochs=50
 	name='model-3'
+	max_queue_size=16
+	batch_size=64
 
 	model = Sequential()
 	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
+	model.add(Dropout(dropout))
 
 	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
+	model.add(Dropout(dropout))
 
 	model.add(Conv2D(64, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
@@ -466,20 +470,19 @@ def model3():
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
+	model.add(Dropout(dropout))
 
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
-	model.add(Dropout(0.2))
+	model.add(Dropout(dropout))
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
-	model.add(Dense(256, kernel_initializer=initializers.lecun_normal()))
-	model.add(Activation('relu'))
-
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
+	model.add(Dropout(dropout))
 
 	model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
@@ -487,9 +490,11 @@ def model3():
 
 	model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
+	model.add(Dropout(dropout))
 
 	model.add(Dense(16, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
+	model.add(Dropout(dropout))
 				
 	model.add(Dense(1))
 	model.add(Activation('sigmoid'))
@@ -502,8 +507,8 @@ def model3():
         				ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001)
         		  ])
 
-	#trainAndSaveBatch(model,epochs,name,(image_size,image_size))
-	trainAndSaveGenerator(model,epochs,name,target_size)
+	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
+	trainAndSaveGenerator(model,epochs,name,target_size,batch_size)
 	model.save_weights('./weights/weights_'+name+'.h5')
 	model.save('./models/model_'+name+'.dnn') 
 
@@ -601,10 +606,10 @@ def main():
 	while not modelStart(model2):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
-	'''
 	while not modelStart(model3):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
+	'''
 	while not modelStart(model4):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
