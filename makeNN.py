@@ -155,10 +155,10 @@ def trainAndSaveGenerator(model,epochs,name,target_size,batch_size):
 	        validation_steps=validDataLen // batch_size,
 	        #validation_steps=validDataLenP // batch_size,
 	        verbose=1,
-	        max_queue_size=16,
+	        max_queue_size=64,
             callbacks=[
-          		EarlyStopping(patience=4, restore_best_weights=True),
-				ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001)
+          		EarlyStopping(patience=8, restore_best_weights=True),
+				ReduceLROnPlateau(patience=4,factor=0.2,min_lr=0.001)
 		    ])
 
 def trainAndSave(model,epochs,name):
@@ -521,6 +521,7 @@ def model4():
 	image_size=96
 	epochs=50
 	name='model-4'
+	batch_size=256
 
 	model = Sequential()
 	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
@@ -608,12 +609,10 @@ def main():
 	while not modelStart(model3):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
-	'''
 	while not modelStart(model4):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
-	'''
-
+	
 
 
 if __name__ == '__main__':
