@@ -169,8 +169,8 @@ def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_fi
 			workers=8,
 			callbacks=[
 				EarlyStopping(patience=8, restore_best_weights=True),
-				ReduceLROnPlateau(patience=3,factor=0.7,min_lr=0.001),
-				ModelCheckpoint(model_save_filepath, monitor='val_loss', save_best_only=True)
+				ReduceLROnPlateau(patience=3,factor=0.7,min_lr=0.001)
+				#ModelCheckpoint(model_save_filepath, monitor='val_loss', save_best_only=True)
 
 			])
 
@@ -385,7 +385,7 @@ def model1():
 
 	model.save_weights('./weights/weights_'+name+'_'+str(round(acc,5))+'.h5')
 	model.save('./models/model_'+name+'_'+str(round(acc,5))+'.dnn')'''
-	
+
 
 #added stride, removed some conv2d and dropout layers
 def model2():
