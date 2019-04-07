@@ -170,7 +170,7 @@ def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_fi
 			callbacks=[
 				EarlyStopping(patience=8, restore_best_weights=True),
 				ReduceLROnPlateau(patience=3,factor=0.7,min_lr=0.001)
-				#ModelCheckpoint(model_save_filepath, monitor='val_loss', save_best_only=True)
+				ModelCheckpoint(model_save_filepath, monitor='val_loss', save_best_only=True)
 
 			])
 
@@ -323,7 +323,7 @@ def model1():
 
 
 	model = Sequential()
-	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
+	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))#, input_shape=(image_size, image_size, 3)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
@@ -404,7 +404,7 @@ def model2():
 
 
 	model = Sequential()
-	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
+	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))#, input_shape=(image_size, image_size, 3)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
