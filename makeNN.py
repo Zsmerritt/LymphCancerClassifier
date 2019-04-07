@@ -404,7 +404,7 @@ def model2():
 
 
 	model = Sequential()
-	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))#, input_shape=(image_size, image_size, 3)))
+	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
