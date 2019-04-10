@@ -164,13 +164,13 @@ def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_fi
 			validation_steps=validDataLen // batch_size,
 			#validation_steps=validDataLenP // batch_size,
 			verbose=1,
-			max_queue_size=16,
-			use_multiprocessing=True,
-			workers=12,
+			max_queue_size=1,
+			#use_multiprocessing=True,
+			#workers=2,
 			callbacks=[
-				EarlyStopping(patience=8, restore_best_weights=True),
-				ReduceLROnPlateau(patience=3,factor=0.7,min_lr=0.001),
-				ModelCheckpoint(model_save_filepath, monitor='val_loss', save_best_only=True)
+				EarlyStopping(patience=6, restore_best_weights=True),
+				ReduceLROnPlateau(patience=3,factor=0.4,min_lr=0.001),
+				ModelCheckpoint(model_save_filepath, monitor='val_acc', save_best_only=True)
 
 			])
 
@@ -319,7 +319,7 @@ def model1():
 	name='model-1'
 	max_queue_size=16
 	batch_size=64
-	filepath='./models/model-1/'
+	filepath='./models/model-1/model.{epoch:02d}-{val_acc:.2f}.hdf5'
 
 
 	model = Sequential()
@@ -399,24 +399,24 @@ def model2():
 	max_queue_size=16
 	batch_size=64
 	stride=(2,2)
-	filepath='./models/model-2/'
+	filepath='./models/model-2/model.{epoch:02d}-{val_acc:.2f}.hdf5'
 
 
 
 	model = Sequential()
-	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
+	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
 	#RFS= 1 + 2*1 = 3
 
-	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
+	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(Dropout(dropout))
 	#RFS = 3 + 2 * 2 = 7
 
-	model.add(Conv2D(64, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
+	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(Dropout(dropout))
@@ -427,13 +427,13 @@ def model2():
 	model.add(Dropout(0.7))
 
 
-	model.add(Conv2D(64, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
+	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(Dropout(dropout))
 	#RFS = 15 + 2 * 8 = 31
 
-	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
+	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
@@ -485,7 +485,7 @@ def model3():
 	name='model-3'
 	max_queue_size=16
 	batch_size=64
-	filepath='./models/model-3/'
+	filepath='./models/model-3/model.{epoch:02d}-{val_acc:.2f}.hdf5'
 
 
 	model = Sequential()
@@ -562,17 +562,11 @@ def model4():
 	epochs=50
 	name='model-4'
 	batch_size=64
-	filepath='./models/model-1/'
+	filepath='./models/model-4/model.{epoch:02d}-{val_acc:.2f}.hdf5'
 
 
 	model = Sequential()
-	model.add(Conv2D(32, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	model.add(MaxPooling2D(pool_size=pool_size))
-	model.add(Dropout(dropout))
-
-	model.add(Conv2D(64, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal(), input_shape=(image_size, image_size, 3)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
@@ -582,6 +576,12 @@ def model4():
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
+	model.add(Dropout(dropout))
+
+	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	#model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
 	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
@@ -642,13 +642,13 @@ def modelStart(modelName):
 
 
 def main():
-	while not modelStart(model2):
+	while not modelStart(model4):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
 	while not modelStart(model3):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
-	while not modelStart(model4):
+	while not modelStart(model2):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
 	while not modelStart(model1):
