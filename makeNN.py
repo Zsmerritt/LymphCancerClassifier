@@ -166,7 +166,7 @@ def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_fi
 			verbose=1,
 			max_queue_size=16,
 			use_multiprocessing=True,
-			workers=12,
+			workers=8,
 			callbacks=[
 				EarlyStopping(patience=8, restore_best_weights=True),
 				ReduceLROnPlateau(patience=3,factor=0.7,min_lr=0.001),
@@ -319,7 +319,7 @@ def model1():
 	name='model-1'
 	max_queue_size=16
 	batch_size=64
-	filepath='./models/model-1/'
+	filepath='./models/model-1/model.{epoch:02d}-{val_acc:.2f}.hdf5'
 
 
 	model = Sequential()
@@ -399,7 +399,7 @@ def model2():
 	max_queue_size=16
 	batch_size=64
 	stride=(2,2)
-	filepath='./models/model-2/'
+	filepath='./models/model-2/model.{epoch:02d}-{val_acc:.2f}.hdf5'
 
 
 
@@ -485,7 +485,7 @@ def model3():
 	name='model-3'
 	max_queue_size=16
 	batch_size=64
-	filepath='./models/model-3/'
+	filepath='./models/model-3/model.{epoch:02d}-{val_acc:.2f}.hdf5'
 
 
 	model = Sequential()
@@ -562,7 +562,7 @@ def model4():
 	epochs=50
 	name='model-4'
 	batch_size=64
-	filepath='./models/model-1/'
+	filepath='./models/model-4/model.{epoch:02d}-{val_acc:.2f}.hdf5'
 
 
 	model = Sequential()
