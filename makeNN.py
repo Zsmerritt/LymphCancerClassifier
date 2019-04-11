@@ -166,7 +166,7 @@ def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_fi
 			verbose=1,
 			max_queue_size=1,
 			#use_multiprocessing=True,
-			#workers=2,
+			workers=1,
 			callbacks=[
 				EarlyStopping(patience=6, restore_best_weights=True),
 				ReduceLROnPlateau(patience=3,factor=0.4,min_lr=0.001),
