@@ -81,11 +81,11 @@ valid_transform_map = dataGen.get_transform_map(data_folder=validSetFolder,
 target_size=(96,96)
 
 
-train_datagen = DataGenerator(
+train_gen = DataGenerator(
+		data_folder=trainSetFolder,
 		rescale=1./255,
 		horizontal_flip=True,
 		vertical_flip=True,
-		fill_mode='nearest',
 		target_size=target_size,
 		batch_size=128,
 		rotation_range=4)
@@ -95,7 +95,8 @@ train_datagen = DataGenerator(
 
 # this is the augmentation configuration we will use for testing:
 # only rescaling
-test_datagen = DataGenerator(
+valid_gen = DataGenerator(
+		data_folder=validSetFolder,
 		rescale=1./255,
 		target_size=target_size,
 		batch_size=128)
@@ -160,16 +161,13 @@ def shuffleData(data_dict):
 
 #using generator
 def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_filepath):
-	#hold on to best model to save after training
-	trainGen=trainGenerator(target_size,batch_size)
-	validGen=validationGenerator(target_size,batch_size)
 	#print info and start epoch
 	hist=model.fit_generator(
-			generator=trainGen,
+			generator=train_gen,
 			steps_per_epoch=trainDataLen // batch_size,
 			#steps_per_epoch=trainDataLenP // batch_size,
 			epochs=epochs,
-			validation_data=validGen,
+			validation_data=valid_gen,
 			validation_steps=validDataLen // batch_size,
 			#validation_steps=validDataLenP // batch_size,
 			verbose=1,

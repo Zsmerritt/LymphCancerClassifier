@@ -15,7 +15,7 @@ class DataGenerator(keras.utils.Sequence):
     #Rotation_range => how many 90 degree rotations are permitted, max 4
     def __init__(self, data_folder, batch_size=32, n_channels=3, data_format='channels_last',
                  n_classes=2, shuffle=True, rotation_range=0, vertical_flip=False, 
-                 horizontal_flip=False, rescale=None, target_size=(32,32)):
+                 horizontal_flip=False, rescale=None, target_size=(32,32), categorical_labels=False):
         #'Initialization'
         self.batch_size = batch_size
         self.data_folder = path.abspath(data_folder)
@@ -27,6 +27,7 @@ class DataGenerator(keras.utils.Sequence):
         self.horizontal_flip=horizontal_flip
         self.rescale=rescale
         self.target_size=target_size
+        self.categorical=categorical
         self.data_paths=self.list_pictures()
         self.labels=self.list_labels()
         self.on_epoch_end()
@@ -46,7 +47,7 @@ class DataGenerator(keras.utils.Sequence):
 
     def __len__(self):
         #'Denotes the number of batches per epoch'
-        return len(self.list_IDs) // self.batch_size
+        return len(self.data_paths) // self.batch_size
 
 
     def __getitem__(self, index):
@@ -60,6 +61,8 @@ class DataGenerator(keras.utils.Sequence):
 
         # Generate data
         X, y = self.__data_generation(list_IDs_temp, list_labels_temp)
+
+        print(X,y)
 
         return X, y
 
@@ -87,8 +90,9 @@ class DataGenerator(keras.utils.Sequence):
             # Store class
             y[i] = list_labels_temp[i]
 
-        return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
-
+            if self.categorical_labels: y = keras.utils.to_categorical(y, num_classes=self.n_classes)
+            
+        return X, y
 
     def get_random_transform(self):
         transform={'rotation':0,'vert_flip':0,'hor_flip':0}
