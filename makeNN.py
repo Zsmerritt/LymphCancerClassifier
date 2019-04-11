@@ -23,7 +23,6 @@ import random as rn
 from tqdm import tqdm
 from threading import Thread
 import time
-from data_loader import data_loader, data_loader_generator
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
 '''
