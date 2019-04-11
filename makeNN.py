@@ -390,7 +390,7 @@ def model1():
 				  metrics=['accuracy'])
 
 	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
-	trainAndSaveGenerator(model,epochs,name,target_size,batch_size,filepath)
+	train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
 
 '''	(loss,acc)=model.evaluate_generator(validationGenerator(target_size,batch_size),steps=validDataLen // batch_size)
 
@@ -478,7 +478,7 @@ def model2():
 				  metrics=['accuracy'])
 
 	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
-	trainAndSaveGenerator(model,epochs,name,target_size,batch_size,filepath)
+	train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
 
 '''	(loss,acc)=model.evaluate_generator(validationGenerator(target_size,batch_size),steps=validDataLen // batch_size)
 
@@ -556,7 +556,7 @@ def model3():
 				  metrics=['accuracy'])
 
 	#train_model(model,epochs,name,(image_size,image_size),train_transform_map,valid_transform_map,max_queue_size)
-	trainAndSaveGenerator(model,epochs,name,target_size,batch_size,filepath)
+	train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
 
 '''	(loss,acc)=model.evaluate_generator(validationGenerator(target_size,batch_size),steps=validDataLen // batch_size)
 
@@ -633,7 +633,7 @@ def model4():
 				  metrics=['accuracy'])
 
 	#trainAndSaveBatch(model,epochs,name,(image_size,image_size))
-	trainAndSaveGenerator(model,epochs,name,target_size,batch_size,filepath)
+	train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
 
 '''	(loss,acc)=model.evaluate_generator(validationGenerator(target_size,batch_size),steps=validDataLen // batch_size)
 
