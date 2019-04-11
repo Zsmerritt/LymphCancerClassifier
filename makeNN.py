@@ -12,7 +12,6 @@ from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Den
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 from keras import initializers
 from copy import deepcopy
-import dataGen
 from data_generator import DataGenerator
 
 
