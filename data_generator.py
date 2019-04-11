@@ -27,7 +27,7 @@ class DataGenerator(keras.utils.Sequence):
         self.horizontal_flip=horizontal_flip
         self.rescale=rescale
         self.target_size=target_size
-        self.categorical=categorical
+        self.categorical_labels=categorical_labels
         self.data_paths=self.list_pictures()
         self.labels=self.list_labels()
         self.on_epoch_end()
@@ -91,7 +91,7 @@ class DataGenerator(keras.utils.Sequence):
             y[i] = list_labels_temp[i]
 
             if self.categorical_labels: y = keras.utils.to_categorical(y, num_classes=self.n_classes)
-            
+
         return X, y
 
     def get_random_transform(self):
