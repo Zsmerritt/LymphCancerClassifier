@@ -141,7 +141,10 @@ def shuffleData(data_dict):
 	perm=np.random.permutation(data_dict['data'].shape[0])
 	data_dict['data'],data_dict['labels']=data_dict['data'][perm],data_dict['labels'][perm]
 
-def train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,model_save_filepath):
+def train_generator_with_batch_schedule(
+						model,epochs,name,target_size,batch_size,
+						model_save_filepath):
+
 	train_gen = DataGenerator(
 		data_folder=trainSetFolder,
 		rescale=1./255,
@@ -160,11 +163,15 @@ def train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size
 	for x in range(1,4):
 		train_gen.update_batch_size(batch_size)
 		valid_gen.update_batch_size(batch_size)
-		model=trainAndSaveGenerator(model,epochs//3,name,target_size,batch_size,model_save_filepath,(epochs//3)*(x-1))
+		model=trainAndSaveGenerator(model,epochs//3,name,target_size,batch_size,model_save_filepath,(epochs//3)*(x-1),train_gen,valid_gen)
 		batch_size=batch_size*2
 
 #using generator
-def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_filepath,initial_epoch):
+def trainAndSaveGenerator(
+						model,epochs,name,target_size,batch_size,
+						model_save_filepath,initial_epoch,train_gen,
+						valid_gen):
+
 	model.fit_generator(
 		generator=train_gen,
 		steps_per_epoch=trainDataLen // batch_size,
