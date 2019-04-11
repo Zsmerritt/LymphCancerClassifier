@@ -141,11 +141,7 @@ def shuffleData(data_dict):
 	perm=np.random.permutation(data_dict['data'].shape[0])
 	data_dict['data'],data_dict['labels']=data_dict['data'][perm],data_dict['labels'][perm]
 
-
-
-#using generator
-def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_filepath):
-	
+def train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,model_save_filepath):
 	train_gen = DataGenerator(
 		data_folder=trainSetFolder,
 		rescale=1./255,
@@ -154,9 +150,6 @@ def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_fi
 		target_size=target_size,
 		batch_size=batch_size,
 		rotation_range=4)
-		#brightness_range=(0.0,1.5))
-		#zca_whitening=True)
-
 
 	valid_gen = DataGenerator(
 		data_folder=validSetFolder,
@@ -164,25 +157,33 @@ def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_fi
 		target_size=target_size,
 		batch_size=batch_size)
 
-	#print info and start epoch
-	hist=model.fit_generator(
-			generator=train_gen,
-			steps_per_epoch=trainDataLen // batch_size,
-			#steps_per_epoch=trainDataLenP // batch_size,
-			epochs=epochs,
-			validation_data=valid_gen,
-			validation_steps=validDataLen // batch_size,
-			#validation_steps=validDataLenP // batch_size,
-			verbose=1,
-			max_queue_size=16,
-			use_multiprocessing=True,
-			#workers=2,
-			callbacks=[
-				EarlyStopping(patience=6, monitor='val_acc'),
-				ReduceLROnPlateau(patience=3,factor=0.4,min_lr=0.001),
-				ModelCheckpoint(model_save_filepath, monitor='val_acc', save_best_only=True)
+	for x in range(1,4):
+		train_gen.update_batch_size(batch_size)
+		valid_gen.update_batch_size(batch_size)
+		model=trainAndSaveGenerator(model,epochs//3,name,target_size,batch_size,model_save_filepath,(epochs//3)*(x-1))
+		batch_size=batch_size*2
 
-			])
+#using generator
+def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_filepath,initial_epoch):
+	model.fit_generator(
+		generator=train_gen,
+		steps_per_epoch=trainDataLen // batch_size,
+		#steps_per_epoch=trainDataLenP // batch_size,
+		epochs=epochs,
+		validation_data=valid_gen,
+		validation_steps=validDataLen // batch_size,
+		#validation_steps=validDataLenP // batch_size,
+		verbose=1,
+		max_queue_size=10,
+		use_multiprocessing=True,
+		initial_epoch=initial_epoch,
+		#workers=2,
+		callbacks=[
+			EarlyStopping(patience=6, monitor='val_acc', restore_best_weights=True),
+			ReduceLROnPlateau(patience=3,factor=0.4,min_lr=0.001),
+			ModelCheckpoint(model_save_filepath, monitor='val_acc', save_best_only=True)
+		])
+	return model
 
 def trainAndSave(model,epochs,name):
 	#hold on to best model to save after training
@@ -325,7 +326,7 @@ def model1():
 	kernel_size=(5,5)
 	pool_size=(2,2)
 	image_size=96
-	epochs=50
+	epochs=60
 	name='model-1'
 	max_queue_size=16
 	batch_size=64
@@ -404,7 +405,7 @@ def model2():
 	kernel_size=(5,5)
 	pool_size=(2,2)
 	image_size=96
-	epochs=50
+	epochs=60
 	name='model-2'
 	max_queue_size=16
 	batch_size=64
@@ -491,7 +492,7 @@ def model3():
 	kernel_size=(5,5)
 	pool_size=(2,2)
 	image_size=96
-	epochs=50
+	epochs=60
 	name='model-3'
 	max_queue_size=16
 	batch_size=64
@@ -569,7 +570,7 @@ def model4():
 	kernel_size=(5,5)
 	pool_size=(2,2)
 	image_size=96
-	epochs=50
+	epochs=60
 	name='model-4'
 	batch_size=64
 	filepath='./models/model-4/model.{epoch:02d}-{val_acc:.2f}.hdf5'

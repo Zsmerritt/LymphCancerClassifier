@@ -64,6 +64,9 @@ class DataGenerator(keras.utils.Sequence):
 
         return X, y
 
+    def update_batch_size(self, batch_size):
+        self.batch_size=batch_size
+
 
     def on_epoch_end(self):
         #'Updates indexes after each epoch'
