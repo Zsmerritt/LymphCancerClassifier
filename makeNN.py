@@ -81,25 +81,7 @@ valid_transform_map = dataGen.get_transform_map(data_folder=validSetFolder,
 target_size=(96,96)
 
 
-train_gen = DataGenerator(
-		data_folder=trainSetFolder,
-		rescale=1./255,
-		horizontal_flip=True,
-		vertical_flip=True,
-		target_size=target_size,
-		batch_size=128,
-		rotation_range=4)
-		#brightness_range=(0.0,1.5))
-		#zca_whitening=True)
 
-
-# this is the augmentation configuration we will use for testing:
-# only rescaling
-valid_gen = DataGenerator(
-		data_folder=validSetFolder,
-		rescale=1./255,
-		target_size=target_size,
-		batch_size=128)
 
 '''
 print('generating data')
@@ -159,8 +141,29 @@ def shuffleData(data_dict):
 	perm=np.random.permutation(data_dict['data'].shape[0])
 	data_dict['data'],data_dict['labels']=data_dict['data'][perm],data_dict['labels'][perm]
 
+
+
 #using generator
 def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_filepath):
+	
+	train_gen = DataGenerator(
+		data_folder=trainSetFolder,
+		rescale=1./255,
+		horizontal_flip=True,
+		vertical_flip=True,
+		target_size=target_size,
+		batch_size=batch_size,
+		rotation_range=4)
+		#brightness_range=(0.0,1.5))
+		#zca_whitening=True)
+
+
+	valid_gen = DataGenerator(
+		data_folder=validSetFolder,
+		rescale=1./255,
+		target_size=target_size,
+		batch_size=batch_size)
+
 	#print info and start epoch
 	hist=model.fit_generator(
 			generator=train_gen,
@@ -171,7 +174,7 @@ def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_fi
 			validation_steps=validDataLen // batch_size,
 			#validation_steps=validDataLenP // batch_size,
 			verbose=1,
-			max_queue_size=32,
+			max_queue_size=16,
 			use_multiprocessing=True,
 			#workers=2,
 			callbacks=[
