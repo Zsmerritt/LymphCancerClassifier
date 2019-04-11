@@ -175,15 +175,9 @@ def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_fi
 			validation_steps=validDataLen // batch_size,
 			#validation_steps=validDataLenP // batch_size,
 			verbose=1,
-<<<<<<< HEAD
-			max_queue_size=1,
-			#use_multiprocessing=True,
-			workers=1,
-=======
 			max_queue_size=32,
 			use_multiprocessing=True,
 			#workers=2,
->>>>>>> 71f259f395dc5928eb88a464b83a46954d4bb5ba
 			callbacks=[
 				EarlyStopping(patience=6, monitor='val_acc'),
 				ReduceLROnPlateau(patience=3,factor=0.4,min_lr=0.001),
