@@ -13,6 +13,7 @@ from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_a
 from keras import initializers
 from copy import deepcopy
 import dataGen
+from data_generator import DataGenerator
 
 
 #ensuring reproducable results
@@ -59,6 +60,7 @@ K.set_session(sess)
 trainSetFolder='./data/train/'
 validSetFolder='./data/valid/'
 
+'''
 # this is the augmentation configuration we will use for training
 train_transform_map = dataGen.get_transform_map(
 		data_folder=trainSetFolder,
@@ -77,20 +79,29 @@ train_transform_map = dataGen.get_transform_map(
 # only rescaling
 valid_transform_map = dataGen.get_transform_map(data_folder=validSetFolder,
 												rescale=1./255)
-train_datagen = ImageDataGenerator(
+'''
+target_size=(96,96)
+
+
+train_datagen = DataGenerator(
 		rescale=1./255,
 		horizontal_flip=True,
 		vertical_flip=True,
 		fill_mode='nearest',
-		brightness_range=(0.0,1.5))
+		target_size=target_size,
+		batch_size=128,
+		rotation_range=4)
+		#brightness_range=(0.0,1.5))
 		#zca_whitening=True)
 
 
 # this is the augmentation configuration we will use for testing:
 # only rescaling
-test_datagen = ImageDataGenerator(rescale=1./255)
+test_datagen = DataGenerator(
+		rescale=1./255,
+		target_size=target_size,
+		batch_size=128)
 
-target_size=(96,96)
 '''
 print('generating data')
 train=dataGen.image_processor(transform_map=train_transform_map,target_size=target_size)
@@ -104,7 +115,7 @@ trainDataLenP=2000
 validDataLenP=512
 
 
-
+'''
 # this is a generator that will read pictures found in
 # subfolers of 'data/train', and indefinitely generate
 # batches of augmented image data
@@ -123,7 +134,7 @@ def validationGenerator(size, batch):
 		batch_size=batch,
 		class_mode='binary')
 
-
+'''
 
 
 def train_model(model,epochs,name,target_size,train_transform_map,valid_transform_map,max_queue_size):
@@ -156,7 +167,7 @@ def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_fi
 	validGen=validationGenerator(target_size,batch_size)
 	#print info and start epoch
 	hist=model.fit_generator(
-			trainGen,
+			generator=trainGen,
 			steps_per_epoch=trainDataLen // batch_size,
 			#steps_per_epoch=trainDataLenP // batch_size,
 			epochs=epochs,
@@ -164,11 +175,17 @@ def trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_fi
 			validation_steps=validDataLen // batch_size,
 			#validation_steps=validDataLenP // batch_size,
 			verbose=1,
+<<<<<<< HEAD
 			max_queue_size=1,
 			#use_multiprocessing=True,
 			workers=1,
+=======
+			max_queue_size=32,
+			use_multiprocessing=True,
+			#workers=2,
+>>>>>>> 71f259f395dc5928eb88a464b83a46954d4bb5ba
 			callbacks=[
-				EarlyStopping(patience=6, restore_best_weights=True),
+				EarlyStopping(patience=6, monitor='val_acc'),
 				ReduceLROnPlateau(patience=3,factor=0.4,min_lr=0.001),
 				ModelCheckpoint(model_save_filepath, monitor='val_acc', save_best_only=True)
 
