@@ -1,3 +1,12 @@
+import logging
+logging.getLogger('tensorflow').disabled = True
+logging.getLogger('tf').disabled = True
+
+import os
+os.environ['TF_CPP_MIN_VLOG_LEVEL'] = '3'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 config = tf.ConfigProto(allow_soft_placement=False)
@@ -112,7 +121,7 @@ def trainAndSaveGenerator(
 		max_queue_size=max_queue_size,
 		use_multiprocessing=True,
 		initial_epoch=initial_epoch,
-		workers=2,
+		workers=4,
 		callbacks=[
 			EarlyStopping(patience=4, monitor='val_acc', restore_best_weights=True),
 			ReduceLROnPlateau(patience=3,factor=0.4,min_lr=0.001),
