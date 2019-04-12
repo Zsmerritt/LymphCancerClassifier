@@ -53,7 +53,7 @@ class DataGenerator(keras.utils.Sequence):
     def __getitem__(self, index):
         #'Generate one batch of data'
         # Generate indexes of the batch
-        indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
+        indexes = np.random.choice(self.indexes,self.batch_size)
 
         # Find list of IDs
         list_IDs_temp = [self.data_paths[k] for k in indexes]
