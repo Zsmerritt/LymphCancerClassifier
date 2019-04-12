@@ -1,5 +1,6 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_CPP_MIN_VLOG_LEVEL'] = '3'
 
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
@@ -381,7 +382,7 @@ def model3():
 #changed number of kernals (96), removed all droupout, added noise layer at beginning
 def model4():
 
-	dropout=0.3
+	dropout=0.6
 	kernel_size=(5,5)
 	pool_size=(2,2)
 	image_size=96
