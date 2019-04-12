@@ -146,7 +146,7 @@ def model1():
 	max_queue_size=16
 	batch_size=64
 	stride=(2,2)
-	filepath='./models/model-1/model-1.{epoch:02d}-{val_acc:.3f}.hdf5'
+	filepath='./models/model-1/model-1.{val_acc:.3f}-{epoch:02d}.hdf5'
 
 
 
@@ -233,7 +233,7 @@ def model2():
 	max_queue_size=16
 	batch_size=64
 	stride=(2,2)
-	filepath='./models/model-2/model-2.{epoch:02d}-{val_acc:.3f}.hdf5'
+	filepath='./models/model-2/model-2.{val_acc:.3f}-{epoch:02d}.hdf5'
 
 
 
@@ -315,7 +315,7 @@ def model3():
 	name='model-3'
 	max_queue_size=16
 	batch_size=64
-	filepath='./models/model-3/model-3.{epoch:02d}-{val_acc:.3f}.hdf5'
+	filepath='./models/model-3/model-3.{val_acc:.3f}-{epoch:02d}.hdf5'
 
 
 	model = Sequential()
@@ -382,14 +382,14 @@ def model3():
 #changed number of kernals (96), removed all droupout, added noise layer at beginning
 def model4():
 
-	dropout=0.6
+	dropout=0.8
 	kernel_size=(5,5)
 	pool_size=(2,2)
 	image_size=96
 	epochs=60
 	name='model-4'
 	batch_size=64
-	filepath='./models/model-4/model-4.{epoch:02d}-{val_acc:.3f}.hdf5'
+	filepath='./models/model-4/model-4.{val_acc:.3f}-{epoch:02d}.hdf5'
 
 
 	model = Sequential()

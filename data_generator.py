@@ -30,7 +30,8 @@ class DataGenerator(keras.utils.Sequence):
         self.categorical_labels=categorical_labels
         self.data_paths=self.list_pictures()
         self.labels=self.list_labels()
-        self.on_epoch_end()
+        self.data_len=len(self.data_paths)
+        self.indexes=np.arange(self.data_len)
         if data_format == 'channels_last':
             self.row_axis=1
             self.col_axis=2
@@ -47,7 +48,7 @@ class DataGenerator(keras.utils.Sequence):
 
     def __len__(self):
         #'Denotes the number of batches per epoch'
-        return len(self.data_paths) // self.batch_size
+        return self.data_len // self.batch_size
 
 
     def __getitem__(self, index):
@@ -66,13 +67,6 @@ class DataGenerator(keras.utils.Sequence):
 
     def update_batch_size(self, batch_size):
         self.batch_size=batch_size
-
-
-    def on_epoch_end(self):
-        #'Updates indexes after each epoch'
-        self.indexes = np.arange(len(self.data_paths))
-        if self.shuffle == True:
-            np.random.shuffle(self.indexes)
 
 
     def __data_generation(self, list_IDs_temp, list_labels_temp):
