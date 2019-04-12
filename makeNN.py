@@ -163,7 +163,7 @@ def train_generator_with_batch_schedule(
 	for x in range(1,4):
 		train_gen.update_batch_size(batch_size)
 		valid_gen.update_batch_size(batch_size)
-		model=trainAndSaveGenerator(model,epochs//3,name,target_size,batch_size,model_save_filepath,(epochs//3)*(x-1),train_gen,valid_gen)
+		trainAndSaveGenerator(model,epochs,name,target_size,batch_size,model_save_filepath,0,train_gen,valid_gen)
 		batch_size=batch_size*2
 
 #using generator
@@ -184,9 +184,8 @@ def trainAndSaveGenerator(
 		max_queue_size=10,
 		use_multiprocessing=True,
 		initial_epoch=initial_epoch,
-		#workers=2,
 		callbacks=[
-			EarlyStopping(patience=6, monitor='val_acc', restore_best_weights=True),
+			EarlyStopping(patience=4, monitor='val_acc', restore_best_weights=True),
 			ReduceLROnPlateau(patience=3,factor=0.4,min_lr=0.001),
 			ModelCheckpoint(model_save_filepath, monitor='val_acc', save_best_only=True)
 		])
@@ -570,7 +569,7 @@ def model3():
 	model.save_weights('./weights/weights_'+name+'_'+str(round(acc,5))+'.h5')
 	model.save('./models/model_'+name+'_'+str(round(acc,5))+'.dnn') '''
 
-#changed number of kernals (81-84)
+#changed number of kernals 
 def model4():
 
 	dropout=0.3
