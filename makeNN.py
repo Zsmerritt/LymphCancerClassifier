@@ -1,11 +1,5 @@
-import logging
-logging.getLogger('tensorflow').disabled = True
-logging.getLogger('tf').disabled = True
-
 import os
-os.environ['TF_CPP_MIN_VLOG_LEVEL'] = '3'
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
