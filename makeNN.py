@@ -114,7 +114,7 @@ def trainAndSaveGenerator(
 		initial_epoch=initial_epoch,
 		workers=8,
 		callbacks=[
-			EarlyStopping(patience=6, monitor='val_acc', restore_best_weights=True),
+			EarlyStopping(patience=4, monitor='val_acc', restore_best_weights=True),
 			ReduceLROnPlateau(patience=3,factor=0.4,min_lr=0.001),
 			ModelCheckpoint(model_save_filepath, monitor='val_acc', save_best_only=True)
 		])
