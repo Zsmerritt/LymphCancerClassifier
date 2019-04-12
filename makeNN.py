@@ -71,7 +71,7 @@ def train_generator_with_batch_schedule(
 						model_save_filepath):
 
 	epochs=epochs//3
-	max_queue_size=20
+	max_queue_size=[32:10:3]
 
 	train_gen = DataGenerator(
 		data_folder=trainSetFolder,
@@ -88,15 +88,14 @@ def train_generator_with_batch_schedule(
 		target_size=target_size,
 		batch_size=batch_size)
 
-	for x in range(1,4):
+	for x in range(3):
 		train_gen.update_batch_size(batch_size)
 		valid_gen.update_batch_size(batch_size)
 		model=trainAndSaveGenerator(
-									model,epochs*x,name,target_size,batch_size,max_queue_size,
-									model_save_filepath,epochs*(x-1),train_gen,valid_gen
+									model,epochs*(x+1),name,target_size,batch_size,max_queue_size[x],
+									model_save_filepath,epochs*x,train_gen,valid_gen
 									)
 		batch_size=batch_size*2
-		max_queue_size=max_queue_size//2
 
 #using generator
 def trainAndSaveGenerator(
@@ -119,7 +118,7 @@ def trainAndSaveGenerator(
 		workers=4,
 		callbacks=[
 			EarlyStopping(patience=4, monitor='val_acc', restore_best_weights=True),
-			ReduceLROnPlateau(patience=3,factor=0.4,min_lr=0.001),
+			ReduceLROnPlateau(patience=3,factor=0.2,min_lr=0.001),
 			ModelCheckpoint(model_save_filepath, monitor='val_acc', save_best_only=True)
 		])
 	return model
@@ -146,70 +145,66 @@ def model1():
 	max_queue_size=16
 	batch_size=64
 	stride=(2,2)
-	filepath='./models/model-1/model-1.{val_acc:.3f}-{epoch:02d}.hdf5'
+	filepath='./models/model-1/model-1-{val_acc:.3f}-{epoch:02d}.hdf5'
 	GN=0.3
 
 
-	model = Sequential()
+model = Sequential()
 	model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
-	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
+	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
-	#RFS= 1 + 2*1 = 3
-	model.add(GaussianNoise(GN))
-	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
-	#RFS = 3 + 2 * 2 = 7
-
-	model.add(GaussianNoise(GN))
-	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
-	#RFS = 7 + 2 * 4 = 15
 	model.add(MaxPooling2D(pool_size=pool_size))
-	#model.add(Dropout(0.7))
-
 
 	model.add(GaussianNoise(GN))
-	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
+	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
-	#RFS = 15 + 2 * 8 = 31
-
-	model.add(GaussianNoise(GN))
-	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
-	#RFS = 31 + 2 * 16 = 63
-
 	model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	#model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
+	model.add(Dropout(dropout))
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
 	model.add(GaussianNoise(GN))
+	model.add(Dense(256, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+
+	model.add(GaussianNoise(GN))
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
 
 	model.add(GaussianNoise(GN))
 	model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
 
 	model.add(GaussianNoise(GN))
 	model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
-	model.add(Dropout(dropout))
-
-	model.add(GaussianNoise(GN))
-	model.add(Dense(16, kernel_initializer=initializers.lecun_normal()))
-	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
 				
 	model.add(Dense(1))
@@ -234,97 +229,11 @@ def model2():
 	max_queue_size=16
 	batch_size=64
 	stride=(2,2)
-	filepath='./models/model-2/model-2.{val_acc:.3f}-{epoch:02d}.hdf5'
+	filepath='./models/model-2/model-2-{val_acc:.3f}-{epoch:02d}.hdf5'
 	GN=0.3
 
 
-	model = Sequential()
-	model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
-	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
-	#RFS= 1 + 2*1 = 3
-	model.add(GaussianNoise(GN))
-	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
-	#RFS = 3 + 2 * 2 = 7
-
-	model.add(GaussianNoise(GN))
-	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
-	#RFS = 7 + 2 * 4 = 15
-	model.add(MaxPooling2D(pool_size=pool_size))
-	#model.add(Dropout(0.7))
-
-
-	model.add(GaussianNoise(GN))
-	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
-	#RFS = 15 + 2 * 8 = 31
-
-	model.add(GaussianNoise(GN))
-	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
-	#RFS = 31 + 2 * 16 = 63
-
-	model.add(MaxPooling2D(pool_size=pool_size))
-
-	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
-
-	model.add(GaussianNoise(GN))
-	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
-	model.add(Activation('relu'))
-	model.add(Dropout(dropout))
-
-	model.add(GaussianNoise(GN))
-	model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
-	model.add(Activation('relu'))
-	model.add(Dropout(dropout))
-
-	model.add(GaussianNoise(GN))
-	model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
-	model.add(Activation('relu'))
-	model.add(Dropout(dropout))
-
-	model.add(GaussianNoise(GN))
-	model.add(Dense(16, kernel_initializer=initializers.lecun_normal()))
-	model.add(Activation('relu'))
-	model.add(Dropout(dropout))
-				
-	model.add(Dense(1))
-	model.add(Activation('sigmoid'))
-
-	model.compile(loss='binary_crossentropy',
-				  optimizer='adam',
-				  metrics=['accuracy'])
-
-	train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
-
-
-#removed a max pooling layers, removed all dropout, added noise layer at beginning 
-def model3():
-
-	dropout=0.8
-	kernel_size=(5,5)
-	pool_size=(2,2)
-	image_size=96
-	epochs=60
-	name='model-3'
-	batch_size=64
-	filepath='./models/model-3/model-3.{val_acc:.3f}-{epoch:02d}.hdf5'
-	GN=0.3
-
-
-	model = Sequential()
+model = Sequential()
 	model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
@@ -354,9 +263,15 @@ def model3():
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
-	model.add(Dropout(0.6))
+	model.add(Dropout(dropout))
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
+
+	model.add(GaussianNoise(GN))
+	model.add(Dense(256, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
 
 	model.add(GaussianNoise(GN))
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
@@ -392,17 +307,17 @@ def model3():
 	train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
 
 
-#changed number of kernals (96), removed all droupout, added noise layer at beginning
-def model4():
+#removed a max pooling layers, removed all dropout, added noise layer at beginning 
+def model3():
 
 	dropout=0.8
 	kernel_size=(5,5)
 	pool_size=(2,2)
 	image_size=96
 	epochs=60
-	name='model-4'
+	name='model-3'
 	batch_size=64
-	filepath='./models/model-4/model-4.{val_acc:.3f}-{epoch:02d}.hdf5'
+	filepath='./models/model-3/model-3-{val_acc:.3f}-{epoch:02d}.hdf5'
 	GN=0.3
 
 
@@ -436,7 +351,195 @@ def model4():
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
-	model.add(Dropout(0.6))
+	model.add(Dropout(dropout))
+
+	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
+
+	model.add(GaussianNoise(GN))
+	model.add(Dense(512, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+
+	model.add(GaussianNoise(GN))
+	model.add(Dense(256, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+
+	model.add(GaussianNoise(GN))
+	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+
+	model.add(GaussianNoise(GN))
+	model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+
+	model.add(GaussianNoise(GN))
+	model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+				
+	model.add(Dense(1))
+	model.add(Activation('sigmoid'))
+
+	model.compile(loss='binary_crossentropy',
+				  optimizer='nadam',
+				  metrics=['accuracy'])
+
+	train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
+
+
+def model4():
+
+	dropout=0.8
+	kernel_size=(5,5)
+	pool_size=(2,2)
+	image_size=96
+	epochs=60
+	name='model-4'
+	batch_size=64
+	filepath='./models/model-4/model-4-{val_acc:.3f}-{epoch:02d}.hdf5'
+	GN=0.3
+
+
+	model = Sequential()
+	model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
+	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	#model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
+	model.add(Dropout(dropout))
+
+	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
+
+	model.add(GaussianNoise(GN))
+	model.add(Dense(512, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+
+	model.add(GaussianNoise(GN))
+	model.add(Dense(256, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+
+	model.add(GaussianNoise(GN))
+	model.add(Dense(256, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+
+	model.add(GaussianNoise(GN))
+	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+
+	model.add(GaussianNoise(GN))
+	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+
+	model.add(GaussianNoise(GN))
+	model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+
+	model.add(GaussianNoise(GN))
+	model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+				
+	model.add(Dense(1))
+	model.add(Activation('sigmoid'))
+
+	model.compile(loss='binary_crossentropy',
+				  optimizer='nadam',
+				  metrics=['accuracy'])
+
+	train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
+
+
+'''
+#97.05%!!! Best Model So Far
+def model4():
+
+	dropout=0.8
+	kernel_size=(5,5)
+	pool_size=(2,2)
+	image_size=96
+	epochs=60
+	name='model-4'
+	batch_size=64
+	filepath='./models/model-4/model-4-{val_acc:.3f}-{epoch:02d}.hdf5'
+	GN=0.3
+
+
+	model = Sequential()
+	model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
+	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	#model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	#model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
+	model.add(Dropout(dropout))
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
@@ -468,11 +571,11 @@ def model4():
 	model.add(Activation('sigmoid'))
 
 	model.compile(loss='binary_crossentropy',
-				  optimizer='adam',
+				  optimizer='nadam',
 				  metrics=['accuracy'])
 
 	train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
-
+'''
 
 
 #method allows for restarting models which are trainging poorly
