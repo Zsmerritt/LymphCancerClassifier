@@ -9,21 +9,15 @@ set_session(tf.Session(config=config))
 
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense, BatchNormalization, GaussianNoise
-from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 from keras import initializers
-from copy import deepcopy
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 from data_generator import DataGenerator
 
 
 #ensuring reproducable results
 #THIS SHOULD BE REMOVED DURING FINAL TRAINING
 import numpy as np
-import tensorflow as tf
 import random as rn
-from tqdm import tqdm
-from threading import Thread
-import time
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
 '''
 # The below is necessary for starting Numpy generated random numbers
@@ -55,67 +49,17 @@ tf.set_random_seed(1234)
 sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
 K.set_session(sess)
 '''
+
 trainSetFolder='./data/train/'
 validSetFolder='./data/valid/'
 
-'''
-# this is the augmentation configuration we will use for training
-train_transform_map = dataGen.get_transform_map(
-		data_folder=trainSetFolder,
-		rescale=1./255,
-		horizontal_flip=True,
-		vertical_flip=True,
-		fill_mode='nearest',
-		contrast_stretching=True, 
-		histogram_equalization=False, 
-		adaptive_equalization=True,
-		brightness_range=(0.0,1.5))
-		#zca_whitening=True)
-
-
-# this is the augmentation configuration we will use for testing:
-# only rescaling
-valid_transform_map = dataGen.get_transform_map(data_folder=validSetFolder,
-												rescale=1./255)
-'''
 target_size=(96,96)
 
-
-
-
-'''
-print('generating data')
-train=dataGen.image_processor(transform_map=train_transform_map,target_size=target_size)
-valid=dataGen.image_processor(transform_map=valid_transform_map,target_size=target_size)
-print('finished processing data')
-'''
 trainDataLen=128909+87757
 validDataLen=2000+1361
 
 trainDataLenP=2000
 validDataLenP=512
-
-
-'''
-# this is a generator that will read pictures found in
-# subfolers of 'data/train', and indefinitely generate
-# batches of augmented image data
-def trainGenerator(size, batch):
-	return train_datagen.flow_from_directory(
-		trainSetFolder,  # this is the target directory
-		target_size=size,  # all images will be resized to 150x150
-		batch_size=batch,
-		class_mode='binary')  # since we use binary_crossentropy loss, we need binary labels
-
-def validationGenerator(size, batch):
-# this is a similar generator, for validation data
-	return test_datagen.flow_from_directory(
-		validSetFolder,
-		target_size=size,
-		batch_size=batch,
-		class_mode='binary')
-
-'''
 
 
 def train_generator_with_batch_schedule(
@@ -245,18 +189,22 @@ def model1():
 
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
-	model.add(Dropout(dropout))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	#model.add(Dropout(dropout))
 
 	model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(Dropout(dropout))
 
 	model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
-	model.add(Dropout(dropout))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	#model.add(Dropout(dropout))
 
 	model.add(Dense(16, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(Dropout(dropout))
 				
 	model.add(Dense(1))
