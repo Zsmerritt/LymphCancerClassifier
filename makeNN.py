@@ -71,7 +71,7 @@ def train_generator_with_batch_schedule(
 						model_save_filepath):
 
 	epochs=epochs//3
-	max_queue_size=[32:10:3]
+	max_queue_size=2
 
 	train_gen = DataGenerator(
 		data_folder=trainSetFolder,
@@ -92,7 +92,7 @@ def train_generator_with_batch_schedule(
 		train_gen.update_batch_size(batch_size)
 		valid_gen.update_batch_size(batch_size)
 		model=trainAndSaveGenerator(
-									model,epochs*(x+1),name,target_size,batch_size,max_queue_size[x],
+									model,epochs*(x+1),name,target_size,batch_size,max_queue_size,
 									model_save_filepath,epochs*x,train_gen,valid_gen
 									)
 		batch_size=batch_size*2
@@ -115,7 +115,7 @@ def trainAndSaveGenerator(
 		max_queue_size=max_queue_size,
 		use_multiprocessing=True,
 		initial_epoch=initial_epoch,
-		workers=4,
+		workers=8,
 		callbacks=[
 			EarlyStopping(patience=4, monitor='val_acc', restore_best_weights=True),
 			ReduceLROnPlateau(patience=3,factor=0.2,min_lr=0.001),
