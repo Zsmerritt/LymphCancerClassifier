@@ -149,7 +149,7 @@ def model1():
 	GN=0.3
 
 
-model = Sequential()
+	model = Sequential()
 	model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
@@ -233,7 +233,7 @@ def model2():
 	GN=0.3
 
 
-model = Sequential()
+	model = Sequential()
 	model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
