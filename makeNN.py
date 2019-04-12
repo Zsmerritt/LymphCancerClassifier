@@ -393,31 +393,31 @@ def model4():
 
 
 	model = Sequential()
-	model.add(GaussianNoise(0.1,input_shape=(image_size, image_size, 3)))
+	model.add(GaussianNoise(0.3,input_shape=(image_size, image_size, 3)))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 
-	model.add(GaussianNoise(0.1))
+	model.add(GaussianNoise(0.3))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 
-	model.add(GaussianNoise(0.1))
+	model.add(GaussianNoise(0.3))
 	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(MaxPooling2D(pool_size=pool_size))
 
-	model.add(GaussianNoise(0.1))
+	model.add(GaussianNoise(0.3))
 	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 
-	model.add(GaussianNoise(0.1))
+	model.add(GaussianNoise(0.3))
 	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
@@ -426,25 +426,25 @@ def model4():
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
-	model.add(GaussianNoise(0.1))
+	model.add(GaussianNoise(0.3))
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
 
-	model.add(GaussianNoise(0.1))
+	model.add(GaussianNoise(0.3))
 	model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
 
-	model.add(GaussianNoise(0.1))
+	model.add(GaussianNoise(0.3))
 	model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
 
-	model.add(GaussianNoise(0.1))
+	model.add(GaussianNoise(0.3))
 	model.add(Dense(16, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
