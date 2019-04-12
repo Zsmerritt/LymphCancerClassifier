@@ -112,7 +112,7 @@ def trainAndSaveGenerator(
 		max_queue_size=max_queue_size,
 		use_multiprocessing=True,
 		initial_epoch=initial_epoch,
-		workers=8,
+		workers=2,
 		callbacks=[
 			EarlyStopping(patience=4, monitor='val_acc', restore_best_weights=True),
 			ReduceLROnPlateau(patience=3,factor=0.4,min_lr=0.001),
