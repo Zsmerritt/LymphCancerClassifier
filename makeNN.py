@@ -421,7 +421,7 @@ def model4():
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
-	model.add(Dropout(dropout))
+	model.add(Dropout(0.6))
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
@@ -429,26 +429,25 @@ def model4():
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
+	model.add(Dropout(dropout))
 
 	model.add(GaussianNoise(0.1))
 	model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-
-	#model.add(Dropout(dropout))
+	model.add(Dropout(dropout))
 
 	model.add(GaussianNoise(0.1))
 	model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
+	model.add(Dropout(dropout))
 
 	model.add(GaussianNoise(0.1))
 	model.add(Dense(16, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
+	model.add(Dropout(dropout))
 				
 	model.add(Dense(1))
 	model.add(Activation('sigmoid'))
