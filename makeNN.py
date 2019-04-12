@@ -137,7 +137,7 @@ ideas for next run:
 #added stride, removed some conv2d and dropout layers, using nadam
 def model1():
 
-	dropout=0.3
+	dropout=0.8
 	kernel_size=(5,5)
 	pool_size=(2,2)
 	image_size=96
@@ -147,40 +147,41 @@ def model1():
 	batch_size=64
 	stride=(2,2)
 	filepath='./models/model-1/model-1.{val_acc:.3f}-{epoch:02d}.hdf5'
-
+	GN=0.3
 
 
 	model = Sequential()
-	model.add(GaussianNoise(0.1,input_shape=(image_size, image_size, 3)))
+	model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(Dropout(dropout))
 	#RFS= 1 + 2*1 = 3
-
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(Dropout(dropout))
 	#RFS = 3 + 2 * 2 = 7
 
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(Dropout(dropout))
 	#RFS = 7 + 2 * 4 = 15
-
-
 	model.add(MaxPooling2D(pool_size=pool_size))
 	#model.add(Dropout(0.7))
 
 
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(Dropout(dropout))
 	#RFS = 15 + 2 * 8 = 31
 
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
@@ -191,25 +192,25 @@ def model1():
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
+	model.add(GaussianNoise(GN))
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
+	model.add(Dropout(dropout))
 
+	model.add(GaussianNoise(GN))
 	model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
+	model.add(Dropout(dropout))
 
+	model.add(GaussianNoise(GN))
 	model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
+	model.add(Dropout(dropout))
 
+	model.add(GaussianNoise(GN))
 	model.add(Dense(16, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
+	model.add(Dropout(dropout))
 				
 	model.add(Dense(1))
 	model.add(Activation('sigmoid'))
@@ -224,7 +225,7 @@ def model1():
 #added stride, removed some conv2d and dropout layers
 def model2():
 
-	dropout=0.3
+	dropout=0.8
 	kernel_size=(5,5)
 	pool_size=(2,2)
 	image_size=96
@@ -234,40 +235,41 @@ def model2():
 	batch_size=64
 	stride=(2,2)
 	filepath='./models/model-2/model-2.{val_acc:.3f}-{epoch:02d}.hdf5'
-
+	GN=0.3
 
 
 	model = Sequential()
-	model.add(GaussianNoise(0.1,input_shape=(image_size, image_size, 3)))
+	model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(Dropout(dropout))
 	#RFS= 1 + 2*1 = 3
-
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(Dropout(dropout))
 	#RFS = 3 + 2 * 2 = 7
 
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(Dropout(dropout))
 	#RFS = 7 + 2 * 4 = 15
-
-
 	model.add(MaxPooling2D(pool_size=pool_size))
 	#model.add(Dropout(0.7))
 
 
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(Dropout(dropout))
 	#RFS = 15 + 2 * 8 = 31
 
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", strides=stride, kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
@@ -278,21 +280,25 @@ def model2():
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
+	model.add(GaussianNoise(GN))
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(Dropout(dropout))
 
+	model.add(GaussianNoise(GN))
 	model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
-	#model.add(Dropout(dropout))
+	model.add(Dropout(dropout))
 
+	model.add(GaussianNoise(GN))
 	model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(Dropout(dropout))
 
+	model.add(GaussianNoise(GN))
 	model.add(Dense(16, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
-	#model.add(Dropout(dropout))
+	model.add(Dropout(dropout))
 				
 	model.add(Dense(1))
 	model.add(Activation('sigmoid'))
@@ -307,67 +313,74 @@ def model2():
 #removed a max pooling layers, removed all dropout, added noise layer at beginning 
 def model3():
 
-	dropout=0.3
+	dropout=0.8
 	kernel_size=(5,5)
 	pool_size=(2,2)
 	image_size=96
 	epochs=60
 	name='model-3'
-	max_queue_size=16
 	batch_size=64
 	filepath='./models/model-3/model-3.{val_acc:.3f}-{epoch:02d}.hdf5'
+	GN=0.3
 
 
 	model = Sequential()
-	model.add(GaussianNoise(0.1,input_shape=(image_size, image_size, 3)))
+	model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(MaxPooling2D(pool_size=pool_size))
 
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
-	#model.add(Dropout(dropout))
+	model.add(Dropout(0.6))
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
+	model.add(GaussianNoise(GN))
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
+	model.add(Dropout(dropout))
 
+	model.add(GaussianNoise(GN))
 	model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
 
-	#model.add(Dropout(dropout))
-
+	model.add(GaussianNoise(GN))
 	model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
+	model.add(Dropout(dropout))
 
+	model.add(GaussianNoise(GN))
 	model.add(Dense(16, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(Dropout(dropout))
+	model.add(Dropout(dropout))
 				
 	model.add(Dense(1))
 	model.add(Activation('sigmoid'))
@@ -390,34 +403,35 @@ def model4():
 	name='model-4'
 	batch_size=64
 	filepath='./models/model-4/model-4.{val_acc:.3f}-{epoch:02d}.hdf5'
+	GN=0.3
 
 
 	model = Sequential()
-	model.add(GaussianNoise(0.3,input_shape=(image_size, image_size, 3)))
+	model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 
-	model.add(GaussianNoise(0.3))
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 
-	model.add(GaussianNoise(0.3))
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(MaxPooling2D(pool_size=pool_size))
 
-	model.add(GaussianNoise(0.3))
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(MaxPooling2D(pool_size=pool_size))
 
-	model.add(GaussianNoise(0.3))
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
@@ -426,25 +440,25 @@ def model4():
 
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
-	model.add(GaussianNoise(0.3))
+	model.add(GaussianNoise(GN))
 	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
 
-	model.add(GaussianNoise(0.3))
+	model.add(GaussianNoise(GN))
 	model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
 
-	model.add(GaussianNoise(0.3))
+	model.add(GaussianNoise(GN))
 	model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
 
-	model.add(GaussianNoise(0.3))
+	model.add(GaussianNoise(GN))
 	model.add(Dense(16, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
