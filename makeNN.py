@@ -1,6 +1,6 @@
 import os
-#os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
-#os.environ['TF_CPP_MIN_VLOG_LEVEL'] = '1'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+os.environ['TF_CPP_MIN_VLOG_LEVEL'] = '1'
 os.environ['TF_ENABLE_AUTO_MIXED_PRECISION'] = '1'
 os.environ['TF_CUDNN_USE_AUTOTUNE'] = "0"
 
