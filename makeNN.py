@@ -124,7 +124,7 @@ def trainAndSaveGenerator(
 		callbacks=[
 			EarlyStopping(patience=4, monitor='val_acc', restore_best_weights=True),
 			ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001),
-			ModelCheckpoint(model_save_filepath, monitor='val_acc', save_best_only=True)
+			ModelCheckpoint(model_save_filepath, monitor='val_acc', save_best_only=True),
 			CSVLogger('./models/'+name+'/'+name+'-log.csv', separator=',', append=True)
 		])
 	return model
