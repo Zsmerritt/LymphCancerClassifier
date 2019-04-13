@@ -89,6 +89,7 @@ def train_generator_with_batch_schedule(
 		batch_size=batch_size)
 
 	for x in range(3):
+		print('Training Model:',name,'Session:',x+1,'Batch Size:',batch_size)
 		train_gen.update_batch_size(batch_size)
 		valid_gen.update_batch_size(batch_size)
 		model=trainAndSaveGenerator(
