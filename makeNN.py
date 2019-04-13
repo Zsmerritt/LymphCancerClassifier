@@ -8,7 +8,7 @@ import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 config = tf.ConfigProto(allow_soft_placement=False)
 config.gpu_options.allow_growth = True
-config.gpu_options.visible_device_list = "0"
+config.gpu_options.visible_device_list = "1"
 config.graph_options.optimizer_options.global_jit_level = tf.OptimizerOptions.ON_1
 
 set_session(tf.Session(config=config))
@@ -74,8 +74,8 @@ def train_generator_with_batch_schedule(
 						model,epochs,name,target_size,batch_size,
 						model_save_filepath):
 
-	epochs=epochs//4
-	max_queue_size=[50,25,10,1]
+	epochs=epochs//3
+	max_queue_size=[50,25,10]
 
 	train_gen = DataGenerator(
 		data_folder=trainSetFolder,
