@@ -6,9 +6,10 @@ os.environ['TF_CUDNN_USE_AUTOTUNE'] = "0"
 
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
-config = tf.ConfigProto(allow_soft_placement=False)#, device_count = {'GPU': 1})
+config = tf.ConfigProto(allow_soft_placement=False, device_count = {'CPU': 0, 'GPU': 1})
 config.gpu_options.allow_growth = True
-#config.gpu_options.visible_device_list = "0"
+config.gpu_options.visible_device_list = "0"
+config.gpu_options.per_process_gpu_memory_fraction = 0.9 
 config.graph_options.optimizer_options.global_jit_level = tf.OptimizerOptions.ON_1
 
 set_session(tf.Session(config=config))
@@ -102,6 +103,7 @@ def train_generator_with_batch_schedule(
 									model_save_filepath,epochs*x,train_gen,valid_gen
 									)
 		batch_size=batch_size*2
+
 	return evaluate_generator(
 				generator=valid_gen,
 				max_queue_size=max_queue_size[-1],
@@ -158,80 +160,77 @@ def model1():
 	max_queue_size=16
 	batch_size=32
 	stride=(2,2)
-	filepath='./models/model-1/model-1-{val_acc:.3f}-{epoch:02d}.hdf5'
+	filepath='./models/model-1/checkpoints/model-1-{val_acc:.3f}-{epoch:02d}.hdf5'
 	GN=0.3
 
-	with tf.device('/cpu:0'):
 
-		model = Sequential()
-		model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
-		model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-		model.add(MaxPooling2D(pool_size=pool_size))
+	model = Sequential()
+	model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
+	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
 
-		model.add(GaussianNoise(GN))
-		model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-		model.add(MaxPooling2D(pool_size=pool_size))
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
 
-		model.add(GaussianNoise(GN))
-		model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-		#model.add(MaxPooling2D(pool_size=pool_size))
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	#model.add(MaxPooling2D(pool_size=pool_size))
 
-		model.add(GaussianNoise(GN))
-		model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-		model.add(MaxPooling2D(pool_size=pool_size))
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(256, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
 
-		model.add(GaussianNoise(GN))
-		model.add(Conv2D(512, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-		model.add(MaxPooling2D(pool_size=pool_size))
-		model.add(Dropout(dropout))
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
+	model.add(Dropout(dropout))
 
-		model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
+	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
-		model.add(GaussianNoise(GN))
-		model.add(Dense(256, kernel_initializer=initializers.lecun_normal()))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-		model.add(Dropout(dropout))
+	model.add(GaussianNoise(GN))
+	model.add(Dense(256, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
 
-		model.add(GaussianNoise(GN))
-		model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-		model.add(Dropout(dropout))
+	model.add(GaussianNoise(GN))
+	model.add(Dense(128, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
 
-		model.add(GaussianNoise(GN))
-		model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-		model.add(Dropout(dropout))
+	model.add(GaussianNoise(GN))
+	model.add(Dense(64, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
 
-		model.add(GaussianNoise(GN))
-		model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-		model.add(Dropout(dropout))
-					
-		model.add(Dense(1))
-		model.add(Activation('sigmoid'))
+	model.add(GaussianNoise(GN))
+	model.add(Dense(32, kernel_initializer=initializers.lecun_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(Dropout(dropout))
+				
+	model.add(Dense(1))
+	model.add(Activation('sigmoid'))
 
-	parallel_model = multi_gpu_model(model, gpus=2)
+	model.compile(
+				loss='binary_crossentropy',
+	  			optimizer='nadam',
+	  			metrics=['accuracy'])
 
-	parallel_model.compile(
-							loss='binary_crossentropy',
-				  			optimizer='nadam',
-				  			metrics=['accuracy'])
-
-	acc=train_generator_with_batch_schedule(parallel_model,epochs,name,target_size,batch_size,filepath)
+	acc=train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
 
 	model.save('./models/model-1/model-1_'+acc+'_best.hdf5')
 
@@ -248,7 +247,7 @@ def model2():
 	max_queue_size=16
 	batch_size=32
 	stride=(2,2)
-	filepath='./models/model-2/model-2-{val_acc:.3f}-{epoch:02d}.hdf5'
+	filepath='./models/model-2/checkpoints/model-2-{val_acc:.3f}-{epoch:02d}.hdf5'
 	GN=0.3
 
 
@@ -323,7 +322,9 @@ def model2():
 				  optimizer='nadam',
 				  metrics=['accuracy'])
 
-	train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
+	acc=train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
+
+	model.save('./models/model-1/model-1_'+acc+'_best.hdf5')
 
 
 #removed a max pooling layers, removed all dropout, added noise layer at beginning 
@@ -336,7 +337,7 @@ def model3():
 	epochs=60
 	name='model-3'
 	batch_size=32
-	filepath='./models/model-3/model-3-{val_acc:.3f}-{epoch:02d}.hdf5'
+	filepath='./models/model-3/checkpoints/model-3-{val_acc:.3f}-{epoch:02d}.hdf5'
 	GN=0.3
 
 
@@ -411,7 +412,9 @@ def model3():
 				  optimizer='nadam',
 				  metrics=['accuracy'])
 
-	train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
+	acc=train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
+
+	model.save('./models/model-1/model-1_'+acc+'_best.hdf5')
 
 
 def model4():
@@ -423,7 +426,7 @@ def model4():
 	epochs=60
 	name='model-4'
 	batch_size=32
-	filepath='./models/model-4/model-4-{val_acc:.3f}-{epoch:02d}.hdf5'
+	filepath='./models/model-4/checkpoints/model-4-{val_acc:.3f}-{epoch:02d}.hdf5'
 	GN=0.3
 
 
@@ -510,7 +513,9 @@ def model4():
 				  optimizer='nadam',
 				  metrics=['accuracy'])
 
-	train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
+	acc=train_generator_with_batch_schedule(model,epochs,name,target_size,batch_size,filepath)
+
+	model.save('./models/model-1/model-1_'+acc+'_best.hdf5')
 
 
 '''
@@ -608,7 +613,7 @@ def modelStart(modelName):
 
 
 def main():
-	while not modelStart(model1):
+	while not modelStart(model4):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
 	while not modelStart(model3):
