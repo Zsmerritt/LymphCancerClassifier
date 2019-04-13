@@ -1,12 +1,18 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 os.environ['TF_CPP_MIN_VLOG_LEVEL'] = '1'
+os.environ['TF_ENABLE_AUTO_MIXED_PRECISION'] = '1'
+
+
+
 
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 config = tf.ConfigProto(allow_soft_placement=False)
 config.gpu_options.allow_growth = True
 config.gpu_options.visible_device_list = "0"
+config.graph_options.optimizer_options.global_jit_level = tf.OptimizerOptions.ON_1
+
 set_session(tf.Session(config=config))
 
 
@@ -119,7 +125,7 @@ def trainAndSaveGenerator(
 		workers=4,
 		callbacks=[
 			EarlyStopping(patience=4, monitor='val_acc', restore_best_weights=True),
-			ReduceLROnPlateau(patience=3,factor=0.2,min_lr=0.001),
+			ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001),
 			ModelCheckpoint(model_save_filepath, monitor='val_acc', save_best_only=True)
 		])
 	return model
