@@ -6,7 +6,7 @@ os.environ['TF_CUDNN_USE_AUTOTUNE'] = "0"
 
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
-config = tf.ConfigProto(allow_soft_placement=False, device_count = {'CPU': 0, 'GPU': 1})
+config = tf.ConfigProto(allow_soft_placement=False, device_count = {'GPU': 1})
 config.gpu_options.allow_growth = True
 config.gpu_options.visible_device_list = "0"
 config.gpu_options.per_process_gpu_memory_fraction = 0.9 
