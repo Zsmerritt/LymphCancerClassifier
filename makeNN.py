@@ -2,9 +2,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 os.environ['TF_CPP_MIN_VLOG_LEVEL'] = '1'
 os.environ['TF_ENABLE_AUTO_MIXED_PRECISION'] = '1'
-
-
-
+os.environ['TF_CUDNN_USE_AUTOTUNE'] = "0"
 
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
@@ -20,7 +18,7 @@ set_session(tf.Session(config=config))
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense, BatchNormalization, GaussianNoise
 from keras import initializers
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, CSVLogger
 from data_generator import DataGenerator
 
 
@@ -76,8 +74,8 @@ def train_generator_with_batch_schedule(
 						model,epochs,name,target_size,batch_size,
 						model_save_filepath):
 
-	epochs=epochs//3
-	max_queue_size=[32,10,3]
+	epochs=epochs//4
+	max_queue_size=[50,25,10,1]
 
 	train_gen = DataGenerator(
 		data_folder=trainSetFolder,
@@ -127,6 +125,7 @@ def trainAndSaveGenerator(
 			EarlyStopping(patience=4, monitor='val_acc', restore_best_weights=True),
 			ReduceLROnPlateau(patience=2,factor=0.2,min_lr=0.001),
 			ModelCheckpoint(model_save_filepath, monitor='val_acc', save_best_only=True)
+			CSVLogger('./models/'+name+'/'+name+'-log.csv', separator=',', append=True)
 		])
 	return model
 
@@ -150,7 +149,7 @@ def model1():
 	epochs=60
 	name='model-1'
 	max_queue_size=16
-	batch_size=64
+	batch_size=32
 	stride=(2,2)
 	filepath='./models/model-1/model-1-{val_acc:.3f}-{epoch:02d}.hdf5'
 	GN=0.3
@@ -234,7 +233,7 @@ def model2():
 	epochs=60
 	name='model-2'
 	max_queue_size=16
-	batch_size=64
+	batch_size=32
 	stride=(2,2)
 	filepath='./models/model-2/model-2-{val_acc:.3f}-{epoch:02d}.hdf5'
 	GN=0.3
@@ -323,7 +322,7 @@ def model3():
 	image_size=96
 	epochs=60
 	name='model-3'
-	batch_size=64
+	batch_size=32
 	filepath='./models/model-3/model-3-{val_acc:.3f}-{epoch:02d}.hdf5'
 	GN=0.3
 
@@ -410,7 +409,7 @@ def model4():
 	image_size=96
 	epochs=60
 	name='model-4'
-	batch_size=64
+	batch_size=32
 	filepath='./models/model-4/model-4-{val_acc:.3f}-{epoch:02d}.hdf5'
 	GN=0.3
 
