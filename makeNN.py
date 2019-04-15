@@ -107,7 +107,7 @@ def train_generator_with_batch_schedule(
 	acc=model.evaluate_generator(
 				generator=valid_gen,
 				max_queue_size=max_queue_size[-1],
-				workers=4,
+				workers=3,
 				use_multiprocessing=True,
 				verbose=1)[1]
 	return round(acc,4)*100
@@ -130,7 +130,7 @@ def trainAndSaveGenerator(
 		max_queue_size=max_queue_size,
 		use_multiprocessing=True,
 		initial_epoch=initial_epoch,
-		workers=4,
+		workers=3,
 		callbacks=[
 			EarlyStopping(patience=4, monitor='val_acc', restore_best_weights=True),
 			ReduceLROnPlateau(patience=2,factor=0.2),
