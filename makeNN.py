@@ -77,7 +77,7 @@ def train_generator_with_batch_schedule(
 						model_save_filepath):
 
 	epochs=epochs//3
-	max_queue_size=[1,1,1]
+	max_queue_size=[25,15,5]
 
 	train_gen = DataGenerator(
 		data_folder=trainSetFolder,
@@ -107,7 +107,7 @@ def train_generator_with_batch_schedule(
 	acc=model.evaluate_generator(
 				generator=valid_gen,
 				max_queue_size=max_queue_size[-1],
-				workers=3,
+				workers=4,
 				use_multiprocessing=True,
 				verbose=1)[1]
 	return round(acc,4)*100
@@ -130,7 +130,7 @@ def trainAndSaveGenerator(
 		max_queue_size=max_queue_size,
 		use_multiprocessing=True,
 		initial_epoch=initial_epoch,
-		workers=3,
+		workers=4,
 		callbacks=[
 			EarlyStopping(patience=4, monitor='val_acc', restore_best_weights=True),
 			ReduceLROnPlateau(patience=2,factor=0.2),
@@ -167,6 +167,24 @@ def model1():
 
 	model = Sequential()
 	model.add(GaussianNoise(GN,input_shape=(image_size, image_size, 3)))
+	model.add(Conv2D(64, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	#model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(64, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	#model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(64, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
+
+	model.add(GaussianNoise(GN))
 	model.add(Conv2D(128, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
@@ -204,24 +222,6 @@ def model1():
 
 	model.add(GaussianNoise(GN))
 	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(MaxPooling2D(pool_size=pool_size))
-
-	model.add(GaussianNoise(GN))
-	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	#model.add(MaxPooling2D(pool_size=pool_size))
-
-	model.add(GaussianNoise(GN))
-	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
-	model.add(MaxPooling2D(pool_size=pool_size))
-
-	model.add(GaussianNoise(GN))
-	model.add(Conv2D(1024, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	#model.add(MaxPooling2D(pool_size=pool_size))
