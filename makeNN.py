@@ -77,7 +77,7 @@ def train_generator_with_batch_schedule(
 						model_save_filepath):
 
 	epochs=epochs//3
-	max_queue_size=[40,20,5]
+	max_queue_size=[20,10,5]
 
 	train_gen = DataGenerator(
 		data_folder=trainSetFolder,
