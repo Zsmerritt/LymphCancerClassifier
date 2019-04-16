@@ -77,7 +77,7 @@ def train_generator_with_batch_schedule(
 						model_save_filepath):
 
 	epochs=epochs//3
-	max_queue_size=[25,15,5]
+	max_queue_size=[25,10,3]
 
 	train_gen = DataGenerator(
 		data_folder=trainSetFolder,
@@ -133,7 +133,7 @@ def trainAndSaveGenerator(
 		workers=4,
 		callbacks=[
 			EarlyStopping(patience=4, monitor='val_acc', restore_best_weights=True),
-			ReduceLROnPlateau(patience=2,factor=0.2),
+			#ReduceLROnPlateau(patience=2,factor=0.2),
 			ModelCheckpoint(model_save_filepath, monitor='val_acc', save_best_only=True),
 			CSVLogger('./models/'+name+'/'+name+'-log.csv', separator=',', append=True)
 		])
