@@ -77,7 +77,7 @@ def train_generator_with_batch_schedule(
 						model_save_filepath):
 
 	epochs=epochs//2
-	max_queue_size=[10,5]
+	max_queue_size=[16,8]
 
 	train_gen = DataGenerator(
 		data_folder=trainSetFolder,
@@ -276,14 +276,14 @@ def model1():
 #added stride, removed some conv2d and dropout layers
 def model2():
 
-	dropout=0.8
+	dropout=0.9
 	kernel_size=(5,5)
 	pool_size=(2,2)
 	image_size=96
 	epochs=60
 	name='model-2'
-	max_queue_size=128
-	batch_size=32
+	max_queue_size=10
+	batch_size=128
 	stride=(2,2)
 	filepath='./models/model-2/checkpoints/model-2-{val_acc:.3f}-{epoch:02d}.hdf5'
 	GN=0.3
