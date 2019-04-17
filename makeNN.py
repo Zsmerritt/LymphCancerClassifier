@@ -76,8 +76,8 @@ def train_generator_with_batch_schedule(
 						model,epochs,name,target_size,batch_size,
 						model_save_filepath):
 
-	epochs=epochs//3
-	max_queue_size=[25,10,3]
+	epochs=epochs//2
+	max_queue_size=[10,5]
 
 	train_gen = DataGenerator(
 		data_folder=trainSetFolder,
@@ -94,7 +94,7 @@ def train_generator_with_batch_schedule(
 		target_size=target_size,
 		batch_size=batch_size)
 
-	for x in range(3):
+	for x in range(2):
 		print('Training Model:',name,'Session:',x+1,'Batch Size:',batch_size)
 		train_gen.update_batch_size(batch_size)
 		valid_gen.update_batch_size(batch_size)
@@ -282,7 +282,7 @@ def model2():
 	image_size=96
 	epochs=60
 	name='model-2'
-	max_queue_size=16
+	max_queue_size=128
 	batch_size=32
 	stride=(2,2)
 	filepath='./models/model-2/checkpoints/model-2-{val_acc:.3f}-{epoch:02d}.hdf5'
@@ -321,10 +321,17 @@ def model2():
 	model.add(MaxPooling2D(pool_size=pool_size))
 	model.add(Dropout(dropout))
 
+	model.add(GaussianNoise(GN))
+	model.add(Conv2D(512, kernel_size=kernel_size, padding="same", kernel_initializer=initializers.he_normal()))
+	model.add(Activation('relu'))
+	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
+	model.add(MaxPooling2D(pool_size=pool_size))
+	model.add(Dropout(dropout))
+
 	model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
 	model.add(GaussianNoise(GN))
-	model.add(Dense(1024, kernel_initializer=initializers.lecun_normal()))
+	model.add(Dense(2048, kernel_initializer=initializers.lecun_normal()))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization(momentum=0.99, epsilon=0.001))
 	model.add(Dropout(dropout))
@@ -651,19 +658,22 @@ def modelStart(modelName):
 
 
 def main():
+	'''
 	while not modelStart(model1):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
+	'''
 	while not modelStart(model2):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
+	'''
 	while not modelStart(model3):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
 	while not modelStart(model4):
 		if input('Would you like to restart this model? (y or n) ')=="n":
 			break
-	
+	'''
 
 
 if __name__ == '__main__':
