@@ -1,5 +1,5 @@
-## Histopathologic Cancer Detection
-# Identify metastatic tissue in histopathologic scans of lymph node sections
+# Histopathologic Cancer Detection
+## Identify metastatic tissue in histopathologic scans of lymph node sections
 
 This project created for [this](https://www.kaggle.com/c/histopathologic-cancer-detection "Histopathologic Cancer Detection") Kaggle contest. 
 
